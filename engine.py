@@ -59,9 +59,24 @@ def round_name(size):
     return ROUND_NAMES.get(size, "Ronda")
 
 
-MATCH_LEN = 90      # minutos por partido
-TICK_MIN = 2        # minutos que avanzan por tick (1 tick ~ 1 segundo real)
-CHAMP_HOLD = 8      # segundos que se muestra el campeón antes de reiniciar
+# --- parámetros del motor (todo tuneable) ---
+MATCH_LEN = 90        # minutos por partido
+CLOCK_STEP = 2        # minutos que avanza el reloj POR TICK ACTIVO (fijo: no escala con volumen)
+ACTIVE_WINDOW = 3     # ticks tras la última compra en que el reloj sigue corriendo (luego se pausa)
+CHAMP_HOLD = 8        # segundos que se muestra el campeón antes de reiniciar
+ENERGY_DECAY = 0.90   # la energía (intensidad visual) decae cada tick
+DEMO = True           # mercado simulado hasta conectar PumpPortal (rachas y bajones)
+
+
+def buy_energy(sol):
+    # energía que aporta una compra: amortiguada (raíz) + tope.
+    # grande aporta más, pero no infinito. Maneja INTENSIDAD, no el reloj.
+    return min(35.0, 9.0 * (max(0.0, sol) ** 0.5))
+
+
+def buy_attack(sol):
+    # ataque que carga una compra: escala con el tamaño (grande acerca más al gol) + tope
+    return min(60.0, 6.0 + sol * 9.0)
 
 
 class Match:
@@ -79,6 +94,9 @@ class Match:
 
 class Tournament:
     def __init__(self):
+        self.energy = 0.0
+        self.idle_ticks = 999
+        self._demo_mood = 0.5
         self.reset()
 
     def reset(self):
@@ -87,7 +105,9 @@ class Tournament:
         self.results = []
         self.champion = None
         self.champion_hold = 0
-        # ronda preliminar: los primeros 16 pasan con bye, los otros 32 juegan
+        self.energy = 0.0
+        self.idle_ticks = 999
+        self._demo_mood = 0.5
         self._start_round(order[16:], order[:16], 48)
 
     def _start_round(self, teams, carry, size):
@@ -106,32 +126,59 @@ class Tournament:
     def matches_this_round(self):
         return len(self.teams) // 2
 
+    def ingest_buy(self, sol):
+        # UNA compra: esto es lo que "activa todo". Carga ataque (segun tamaño),
+        # suma energía y volumen, y reinicia el contador de inactividad (mueve el reloj).
+        # El tamaño de la compra NO acelera el reloj, solo la acción.
+        if self.champion is not None:
+            return
+        m = self.match
+        self.idle_ticks = 0
+        self.energy = min(100.0, self.energy + buy_energy(sol))
+        atk = buy_attack(sol)
+        if random.random() < 0.5:
+            m.atk_a += atk
+            m.vol_a += sol
+        else:
+            m.atk_b += atk
+            m.vol_b += sol
+        if m.atk_a >= 100:
+            m.ga += 1
+            m.atk_a -= 100
+        if m.atk_b >= 100:
+            m.gb += 1
+            m.atk_b -= 100
+
+    def _demo_buys(self):
+        # mercado simulado: el "mood" deriva despacio (con reversión a la media),
+        # generando rachas de actividad y bajones, hasta que conectemos PumpPortal.
+        self._demo_mood += random.uniform(-0.25, 0.25) + (0.5 - self._demo_mood) * 0.1
+        self._demo_mood = max(0.0, min(1.0, self._demo_mood))
+        if random.random() < self._demo_mood:
+            n = 1 + int(random.random() * self._demo_mood * 4)
+            for _ in range(n):
+                sol = round(random.random() * random.random() * 4 + 0.05, 2)
+                self.ingest_buy(sol)
+
     def tick(self):
         if self.champion is not None:
             self.champion_hold -= 1
             if self.champion_hold <= 0:
                 self.reset()
             return
-        m = self.match
-        for _ in range(TICK_MIN):
-            if random.random() < 0.30:
-                amt = random.uniform(8, 24)
-                if random.random() < 0.5:
-                    m.atk_a += amt
-                    m.vol_a += amt / 100.0
-                else:
-                    m.atk_b += amt
-                    m.vol_b += amt / 100.0
-            if m.atk_a >= 100:
-                m.ga += 1
-                m.atk_a -= 100
-            if m.atk_b >= 100:
-                m.gb += 1
-                m.atk_b -= 100
-            m.minuto += 1
-            if m.minuto >= MATCH_LEN:
-                self._end_match()
-                return
+        self.energy *= ENERGY_DECAY
+        self.idle_ticks += 1
+        if DEMO:
+            self._demo_buys()   # puede reiniciar idle_ticks a 0
+        # EL RELOJ avanza SOLO si hubo compra hace poco, a paso FIJO.
+        # Mas/grandes compras NO lo aceleran (eso va a la accion/energia).
+        if self.idle_ticks <= ACTIVE_WINDOW:
+            for _ in range(CLOCK_STEP):
+                self.match.minuto += 1
+                if self.match.minuto >= MATCH_LEN:
+                    self._end_match()
+                    return
+        # sin actividad reciente -> el reloj se pausa (no avanza)
 
     def _end_match(self):
         m = self.match
@@ -156,26 +203,6 @@ class Tournament:
         else:
             self._start_match()
 
-    def ingest_buy(self, sol):
-        # compra real de PumpPortal: carga el ataque de un equipo
-        # (regla simple por ahora; se afina al conectar el feed)
-        if self.champion is not None:
-            return
-        m = self.match
-        amt = min(70.0, sol * 120.0)
-        if random.random() < 0.5:
-            m.atk_a += amt
-            m.vol_a += sol
-        else:
-            m.atk_b += amt
-            m.vol_b += sol
-        if m.atk_a >= 100:
-            m.ga += 1
-            m.atk_a -= 100
-        if m.atk_b >= 100:
-            m.gb += 1
-            m.atk_b -= 100
-
     def snapshot(self):
         m = self.match
         a = CHAINS[m.a]
@@ -187,6 +214,8 @@ class Tournament:
             "partido": self.pos + 1,
             "partidos_ronda": self.matches_this_round(),
             "minuto": m.minuto,
+            "energia": round(self.energy),                 # 0-100, para intensidad visual
+            "activo": self.idle_ticks <= ACTIVE_WINDOW,    # si el reloj esta corriendo
             "local": {"short": a[1], "name": a[0], "color": a[2], "goles": m.ga, "atk": round(m.atk_a)},
             "visita": {"short": b[1], "name": b[0], "color": b[2], "goles": m.gb, "atk": round(m.atk_b)},
             "campeon": (CHAINS[self.champion][1] if self.champion is not None else None),
