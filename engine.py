@@ -59,13 +59,12 @@ def round_name(size):
     return ROUND_NAMES.get(size, "Ronda")
 
 
-# --- parámetros del motor (todo tuneable) ---
-MATCH_LEN = 90        # minutos por partido
-CLOCK_STEP = 2        # minutos por TICK ACTIVO (fijo: no escala con volumen)
-ACTIVE_WINDOW = 3     # ticks tras la última compra en que el reloj sigue corriendo
-CHAMP_HOLD = 8        # segundos que se muestra el campeón antes de reiniciar
-ENERGY_DECAY = 0.90   # la energía (intensidad visual) decae cada tick
-DEMO = True           # mercado simulado hasta conectar PumpPortal (rachas y bajones)
+MATCH_LEN = 90
+CLOCK_STEP = 2
+ACTIVE_WINDOW = 3
+CHAMP_HOLD = 8
+ENERGY_DECAY = 0.90
+DEMO = True
 
 
 def buy_energy(sol):
@@ -94,10 +93,11 @@ class Tournament:
         self.energy = 0.0
         self.idle_ticks = 999
         self._demo_mood = 0.5
-        self._buy_accum = 0       # compras desde el último tick
-        self._sol_max_accum = 0.0 # compra más grande desde el último tick
-        self.buys_tick = 0        # compras reportadas en este tick (para el snapshot)
+        self._buy_accum = 0
+        self._sol_max_accum = 0.0
+        self.buys_tick = 0
         self.sol_max_tick = 0.0
+        self.version = 0           # cambia cuando cambia el cuadro
         self.reset()
 
     def reset(self):
@@ -113,6 +113,7 @@ class Tournament:
         self._sol_max_accum = 0.0
         self.buys_tick = 0
         self.sol_max_tick = 0.0
+        self.version += 1
         self._start_round(order[16:], order[:16], 48)
 
     def _start_round(self, teams, carry, size):
@@ -172,12 +173,10 @@ class Tournament:
         self.idle_ticks += 1
         if DEMO:
             self._demo_buys()
-        # contar las compras (reales + demo) que cayeron en este tick, y resetear
         self.buys_tick = self._buy_accum
         self.sol_max_tick = self._sol_max_accum
         self._buy_accum = 0
         self._sol_max_accum = 0.0
-        # el reloj avanza solo con actividad reciente, a paso fijo
         if self.idle_ticks <= ACTIVE_WINDOW:
             for _ in range(CLOCK_STEP):
                 self.match.minuto += 1
@@ -187,6 +186,7 @@ class Tournament:
 
     def _end_match(self):
         m = self.match
+        self.version += 1
         if m.ga != m.gb:
             wi = m.a if m.ga > m.gb else m.b
         else:
@@ -208,6 +208,36 @@ class Tournament:
         else:
             self._start_match()
 
+    def bracket_state(self):
+        by_round = {}
+        for r in self.results:
+            by_round.setdefault(r["ronda"], []).append(r)
+        rounds = []
+        for size in (48, 32, 16, 8, 4, 2):
+            done = by_round.get(size, [])
+            is_current = (size == self.round_size and self.champion is None)
+            if not done and not is_current:
+                continue
+            matches = []
+            for r in done:
+                matches.append({"a": r["a"], "b": r["b"], "ga": r["ga"], "gb": r["gb"],
+                                "win": r["win"], "st": "done"})
+            if is_current:
+                total = self.matches_this_round()
+                for i in range(self.pos, total):
+                    ca = CHAINS[self.teams[i * 2]][1]
+                    cb = CHAINS[self.teams[i * 2 + 1]][1]
+                    if i == self.pos:
+                        mm = self.match
+                        matches.append({"a": ca, "b": cb, "ga": mm.ga, "gb": mm.gb,
+                                        "win": None, "st": "live"})
+                    else:
+                        matches.append({"a": ca, "b": cb, "ga": 0, "gb": 0,
+                                        "win": None, "st": "next"})
+            rounds.append({"size": size, "name": round_name(size), "matches": matches})
+        return {"type": "bracket", "rounds": rounds,
+                "campeon": (CHAINS[self.champion][1] if self.champion is not None else None)}
+
     def snapshot(self):
         m = self.match
         a = CHAINS[m.a]
@@ -221,8 +251,9 @@ class Tournament:
             "minuto": m.minuto,
             "energia": round(self.energy),
             "activo": self.idle_ticks <= ACTIVE_WINDOW,
-            "buys": self.buys_tick,                  # compras en este tick (1 pulso c/u)
-            "sol_max": round(self.sol_max_tick, 2),  # la compra mas grande del tick
+            "buys": self.buys_tick,
+            "sol_max": round(self.sol_max_tick, 2),
+            "bver": self.version,
             "local": {"short": a[1], "name": a[0], "color": a[2], "goles": m.ga, "atk": round(m.atk_a)},
             "visita": {"short": b[1], "name": b[0], "color": b[2], "goles": m.gb, "atk": round(m.atk_b)},
             "campeon": (CHAINS[self.champion][1] if self.champion is not None else None),
