@@ -61,21 +61,18 @@ def round_name(size):
 
 # --- parámetros del motor (todo tuneable) ---
 MATCH_LEN = 90        # minutos por partido
-CLOCK_STEP = 2        # minutos que avanza el reloj POR TICK ACTIVO (fijo: no escala con volumen)
-ACTIVE_WINDOW = 3     # ticks tras la última compra en que el reloj sigue corriendo (luego se pausa)
+CLOCK_STEP = 2        # minutos por TICK ACTIVO (fijo: no escala con volumen)
+ACTIVE_WINDOW = 3     # ticks tras la última compra en que el reloj sigue corriendo
 CHAMP_HOLD = 8        # segundos que se muestra el campeón antes de reiniciar
 ENERGY_DECAY = 0.90   # la energía (intensidad visual) decae cada tick
 DEMO = True           # mercado simulado hasta conectar PumpPortal (rachas y bajones)
 
 
 def buy_energy(sol):
-    # energía que aporta una compra: amortiguada (raíz) + tope.
-    # grande aporta más, pero no infinito. Maneja INTENSIDAD, no el reloj.
     return min(35.0, 9.0 * (max(0.0, sol) ** 0.5))
 
 
 def buy_attack(sol):
-    # ataque que carga una compra: escala con el tamaño (grande acerca más al gol) + tope
     return min(60.0, 6.0 + sol * 9.0)
 
 
@@ -97,6 +94,10 @@ class Tournament:
         self.energy = 0.0
         self.idle_ticks = 999
         self._demo_mood = 0.5
+        self._buy_accum = 0       # compras desde el último tick
+        self._sol_max_accum = 0.0 # compra más grande desde el último tick
+        self.buys_tick = 0        # compras reportadas en este tick (para el snapshot)
+        self.sol_max_tick = 0.0
         self.reset()
 
     def reset(self):
@@ -108,6 +109,10 @@ class Tournament:
         self.energy = 0.0
         self.idle_ticks = 999
         self._demo_mood = 0.5
+        self._buy_accum = 0
+        self._sol_max_accum = 0.0
+        self.buys_tick = 0
+        self.sol_max_tick = 0.0
         self._start_round(order[16:], order[:16], 48)
 
     def _start_round(self, teams, carry, size):
@@ -127,12 +132,11 @@ class Tournament:
         return len(self.teams) // 2
 
     def ingest_buy(self, sol):
-        # UNA compra: esto es lo que "activa todo". Carga ataque (segun tamaño),
-        # suma energía y volumen, y reinicia el contador de inactividad (mueve el reloj).
-        # El tamaño de la compra NO acelera el reloj, solo la acción.
         if self.champion is not None:
             return
         m = self.match
+        self._buy_accum += 1
+        self._sol_max_accum = max(self._sol_max_accum, sol)
         self.idle_ticks = 0
         self.energy = min(100.0, self.energy + buy_energy(sol))
         atk = buy_attack(sol)
@@ -150,8 +154,6 @@ class Tournament:
             m.atk_b -= 100
 
     def _demo_buys(self):
-        # mercado simulado: el "mood" deriva despacio (con reversión a la media),
-        # generando rachas de actividad y bajones, hasta que conectemos PumpPortal.
         self._demo_mood += random.uniform(-0.25, 0.25) + (0.5 - self._demo_mood) * 0.1
         self._demo_mood = max(0.0, min(1.0, self._demo_mood))
         if random.random() < self._demo_mood:
@@ -169,16 +171,19 @@ class Tournament:
         self.energy *= ENERGY_DECAY
         self.idle_ticks += 1
         if DEMO:
-            self._demo_buys()   # puede reiniciar idle_ticks a 0
-        # EL RELOJ avanza SOLO si hubo compra hace poco, a paso FIJO.
-        # Mas/grandes compras NO lo aceleran (eso va a la accion/energia).
+            self._demo_buys()
+        # contar las compras (reales + demo) que cayeron en este tick, y resetear
+        self.buys_tick = self._buy_accum
+        self.sol_max_tick = self._sol_max_accum
+        self._buy_accum = 0
+        self._sol_max_accum = 0.0
+        # el reloj avanza solo con actividad reciente, a paso fijo
         if self.idle_ticks <= ACTIVE_WINDOW:
             for _ in range(CLOCK_STEP):
                 self.match.minuto += 1
                 if self.match.minuto >= MATCH_LEN:
                     self._end_match()
                     return
-        # sin actividad reciente -> el reloj se pausa (no avanza)
 
     def _end_match(self):
         m = self.match
@@ -214,8 +219,10 @@ class Tournament:
             "partido": self.pos + 1,
             "partidos_ronda": self.matches_this_round(),
             "minuto": m.minuto,
-            "energia": round(self.energy),                 # 0-100, para intensidad visual
-            "activo": self.idle_ticks <= ACTIVE_WINDOW,    # si el reloj esta corriendo
+            "energia": round(self.energy),
+            "activo": self.idle_ticks <= ACTIVE_WINDOW,
+            "buys": self.buys_tick,                  # compras en este tick (1 pulso c/u)
+            "sol_max": round(self.sol_max_tick, 2),  # la compra mas grande del tick
             "local": {"short": a[1], "name": a[0], "color": a[2], "goles": m.ga, "atk": round(m.atk_a)},
             "visita": {"short": b[1], "name": b[0], "color": b[2], "goles": m.gb, "atk": round(m.atk_b)},
             "campeon": (CHAINS[self.champion][1] if self.champion is not None else None),
