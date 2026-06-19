@@ -1,75 +1,79 @@
-# RUG WORLD CUP 26 — Frontend: formato mundial (grupos + eliminatorias)
+# RUG WORLD CUP 26 — Frontend: página LIVE + formato mundial
 
 ## Contexto
-El motor del backend pasó a **formato mundial real**: fase de grupos (12 grupos de 4) →
-eliminatorias desde 32avos → partido por el 3er puesto = **104 partidos**. Es **buy-driven**:
-arranca con la primera compra y avanza con la actividad. Hay que cablear `index.html` para que
-consuma esta nueva data del server.
+La página es **solo una transmisión en vivo** (broadcast). El motor del backend pasó a **formato
+mundial real**: fase de grupos (12 grupos de 4) → eliminatorias desde 32avos → 3er puesto = 104
+partidos, **buy-driven** (arranca con la primera compra). Dos cosas a la vez en este trabajo:
+(A) rediseñar la UI para que sea live-only (sin menú de pestañas, sin barra de comentarios), y
+(B) cablear esa UI a la data nueva del server.
 
 ## Backend (ya validado y desplegado — NO tocar)
-El WebSocket (`BACKEND_WS`) ahora manda TRES tipos de mensaje:
+El WebSocket (`BACKEND_WS`) manda TRES tipos de mensaje:
 
 ### `{type:"state", ...}` (cada tick) — el partido en vivo
-Campos nuevos respecto de antes:
 - `fase`: `"grupos"` o `"ko"`.
-- `ronda`: en grupos `"Fase de grupos"`; en eliminatoria `"16avos de final"` / `"Octavos de final"` /
+- `ronda`: grupos → `"Fase de grupos"`; eliminatoria → `"16avos de final"` / `"Octavos de final"` /
   `"Cuartos de final"` / `"Semifinal"` / `"Final"` / `"Tercer puesto"`.
-- `fecha`: número de fecha (1-3) en fase de grupos, `null` en eliminatoria.
+- `fecha`: nº de fecha (1-3) en grupos, `null` en eliminatoria.
 - `grupo`: letra del grupo del partido en vivo (`"A"`..`"L"`) en grupos, `null` en eliminatoria.
-- `partido` / `partidos_ronda`: número del partido y total de la fase/ronda.
-- (siguen igual) `minuto`, `energia`, `activo`, `buys`, `sol_max`, `bver`,
+- `partido` / `partidos_ronda`: nº del partido y total de la fase/ronda.
+- (igual que antes) `minuto`, `energia`, `activo`, `buys`, `sol_max`, `bver`,
   `local`/`visita` (short/name/color/goles/atk), `campeon`, `tercero`.
 
-### `{type:"groups", fase, grupos:[...]}` (al conectar + cuando cambia algo)
-Los 12 grupos con su tabla (ordenada por pts desc, desempate dif. de gol, luego goles a favor):
+### `{type:"groups", fase, grupos:[...]}` (al conectar + cuando cambia)
+12 grupos con su tabla (ordenada por pts desc, desempate dif. gol, luego gf):
 ```json
 { "type":"groups", "fase":"grupos",
   "grupos":[ { "grupo":"A", "tabla":[
      {"short":"BTC","name":"Bitcoin","color":"#f7931a",
-      "pj":3,"g":2,"e":1,"p":0,"gf":5,"gc":2,"dg":3,"pts":7,"pos":1},
-     ... 4 filas ...
+      "pj":3,"g":2,"e":1,"p":0,"gf":5,"gc":2,"dg":3,"pts":7,"pos":1}, ... 4 filas ...
   ]}, ... 12 grupos ... ] }
 ```
 
 ### `{type:"bracket", rounds:[...], campeon, tercero}` (al conectar + cuando cambia)
-El cuadro de eliminatorias. **Vacío (`rounds:[]`) durante la fase de grupos**; se llena al empezar
-las eliminatorias. Formato igual al que ya consume `renderFixture` (rounds con `size`/`name`/
-`matches[{a,b,ga,gb,win,st}]`, donde `st` es `done`/`live`/`next`). `tercero` = chain del 3er puesto.
+Cuadro de eliminatorias. **Vacío (`rounds:[]`) en fase de grupos**; se llena al empezar las
+eliminatorias. Formato: rounds con `size`/`name`/`matches[{a,b,ga,gb,win,st}]` (st = done/live/next).
 
-## Tareas en `index.html`
+## A) Rediseño UI — la página es SOLO live
 
-1. **Manejar el mensaje `groups`** en el `onmessage` del WS: guardarlo (ej. `S.srvGroups`) y re-render
-   de las pestañas Grupos/Tabla si están abiertas. (El `onmessage` ya rutea `state`/`bracket`; agregar `groups`.)
+1. **Sacar el menú lateral** completo: los botones LIVE / GROUPS / TABLE / BRACKET / FEED / CHAT /
+   HOW TO y todo el ruteo por secciones (`renderScreen` por sección, etc.). Ya no se navega.
 
-2. **Pestaña GRUPOS** — reescribir para dibujar desde `S.srvGroups` (los 12 grupos reales del server).
-   **Eliminar** la lógica vieja local que computa grupos sobre `S.vol`/`S.points` (tipo `computeGroups`).
-   Mostrar los 12 grupos con su tabla (equipo, PJ, G, E, P, DG, Pts), resaltando los **2 primeros** de cada
-   grupo (clasifican directo). Opcional: marcar la zona de "mejores terceros".
+2. **Sacar la barra inferior de comentarios** por completo: arrays de mensajes truchos, su seed, y el
+   DOM del ticker inferior. (El ticker de titulares satíricos de ARRIBA puede quedar si querés; lo que
+   se va es la barra de comentarios de abajo.)
 
-3. **Pestaña TABLA** — reescribir para mostrar una tabla global derivada de `S.srvGroups`. Sugerencia:
-   las 48 chains ordenadas por pts (y desempates), marcando los 32 clasificados. **Eliminar** la lógica
-   vieja local (`derive()` sobre `S.sold`). (Si te parece mejor otra vista, dale, pero que salga de la data real.)
+3. **En el lugar del menú, un panel compacto AUTO-ROTATIVO** — mismo footprint que tenía el menú
+   (misma columna izquierda, mismo alto/ancho aprox., **NO más grande**). Rota solo cada ~5s mostrando
+   el estado del torneo con la data del server. Vistas que va ciclando:
+   - **AHORA**: fase + partido en vivo. Grupos → "FASE DE GRUPOS · Fecha {fecha} · Grupo {grupo}".
+     Eliminatoria → "{ronda} · Partido {partido}/{partidos_ronda}". Con los 2 equipos y el marcador.
+   - **GRUPOS** (durante la fase de grupos): rota por los 12 grupos (A→L), cada slide con la tabla del
+     grupo (4 equipos: Pts y DG), resaltando los **2 primeros** (clasifican). Tip: arrancá por el grupo
+     del partido en vivo.
+   - **CUADRO** (durante eliminatorias): el avance del cuadro (quién pasó de ronda) y, al final, el
+     **campeón** y el **3er puesto** (`campeon`/`tercero`).
+   - Indicá visualmente que rota (ej. puntitos abajo). Por defecto pasivo (se mira, no se toca);
+     opcional que un click pause/avance.
 
-4. **Etiqueta del partido en vivo** (EN VIVO / HUD) — componer el label desde los campos nuevos del snapshot:
-   - en grupos: `"Fase de grupos · Grupo {grupo} · Fecha {fecha}"`
-   - en eliminatoria: `"{ronda} · Partido {partido}/{partidos_ronda}"`
+4. **Eliminá la lógica vieja local** de grupos/tabla (`computeGroups`, `derive()` sobre `S.vol`/`S.sold`).
+   Todo sale de la data real del server (`S.srvGroups` desde el mensaje `groups`, `S.srvBracket` desde
+   `bracket`, y el snapshot).
 
-5. **Pestaña FIXTURE** — `renderFixture` ya dibuja desde `S.srvBracket` y los nombres de ronda ya están.
-   Solo dos cosas: durante la fase de grupos el bracket llega vacío, así que en vez de "esperando datos del
-   torneo…" mostrar algo como "Fase de grupos en curso — el cuadro se arma al terminar los grupos". Y mostrar
-   el **campeón** y el **tercero** (campos `campeon`/`tercero`) cuando estén definidos.
+5. **HUD del partido** (cartelito arriba a la izquierda con marcador + minuto): puede mostrar también la
+   fase/grupo desde el snapshot.
 
-6. **Chat fake** — si todavía quedara algo de chat trucho/comentarios, sacarlo (no hay feature de comentarios;
-   pump.fun ya los tiene). El **ticker** (barra inferior) alimentalo SOLO con eventos reales del torneo desde
-   `applyState`: goles y cambios de ronda/fase.
+## B) Wiring de datos
+- En el `onmessage` del WS (ya rutea `state`/`bracket`) agregá el caso `groups` → guardar en `S.srvGroups`
+  y refrescar el panel.
+- El panel se redibuja con cada `state`/`groups`/`bracket` y con su propio timer de rotación.
 
 ## Cómo probar
-Abrir `index.html`. Como es buy-driven, hasta la primera compra está congelado (Fase de grupos, min 0).
-Para moverlo en dev: en el backend seteá la env `DEV_KEY` en Render y pegá
-`…onrender.com/api/dev/buy?sol=0.5&key=TUCLAVE` varias veces. Verificá: la pestaña GRUPOS muestra los 12
-grupos llenándose, la TABLA refleja lo mismo, el label del partido dice fase/grupo/fecha correctos, y al
-terminar los 72 partidos de grupos el FIXTURE arma el cuadro de 32avos.
+Abrir `index.html`. Buy-driven: hasta la primera compra está congelado (Fase de grupos, min 0). Para
+moverlo en dev: en el backend seteá la env `DEV_KEY` y pegá `…onrender.com/api/dev/buy?sol=0.5&key=TUCLAVE`
+varias veces. Verificá: el panel rota mostrando los 12 grupos llenándose, el "AHORA" dice fase/grupo/fecha
+correctos, y al terminar los 72 de grupos el panel pasa a mostrar el CUADRO de eliminatorias.
 
 ## Validación
 - No leas el index entero; grep/secciones. Extraé el `<script>` grande y corré `node --check`.
-- Un solo commit al final. Mostrame el diff antes de commitear.
+- Un solo commit. Mostrame el diff antes.
