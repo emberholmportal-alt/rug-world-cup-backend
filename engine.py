@@ -99,6 +99,7 @@ class Tournament:
         self._sol_max_accum = 0.0
         self.buys_tick = 0
         self.sol_max_tick = 0.0
+        self.volume = 0.0
         self.reset()
 
     def reset(self):
@@ -128,6 +129,7 @@ class Tournament:
         self._sol_max_accum = 0.0
         self.buys_tick = 0
         self.sol_max_tick = 0.0
+        self.volume = 0.0
         self.version += 1
         self._start_group_match()
 
@@ -158,25 +160,33 @@ class Tournament:
     # ---------- compras ----------
     def ingest_buy(self, sol):
         if self.champion is not None:
-            return
+            return None
         m = self.match
         self._buy_accum += 1
         self._sol_max_accum = max(self._sol_max_accum, sol)
+        self.volume += sol
         self.idle_ticks = 0
         self.energy = min(100.0, self.energy + buy_energy(sol))
         atk = buy_attack(sol)
         if random.random() < 0.5:
             m.atk_a += atk
             m.vol_a += sol
+            side = "home"
+            ti = m.a
         else:
             m.atk_b += atk
             m.vol_b += sol
+            side = "away"
+            ti = m.b
         if m.atk_a >= 100:
             m.ga += 1
             m.atk_a -= 100
         if m.atk_b >= 100:
             m.gb += 1
             m.atk_b -= 100
+        c = CHAINS[ti]
+        return {"sol": round(float(sol), 3), "side": side,
+                "short": c[1], "name": c[0], "color": c[2]}
 
     def _demo_buys(self):
         self._demo_mood += random.uniform(-0.25, 0.25) + (0.5 - self._demo_mood) * 0.1
@@ -344,7 +354,7 @@ class Tournament:
             "grupo": grupo, "partido": partido, "partidos_ronda": total,
             "minuto": m.minuto, "energia": round(self.energy),
             "activo": self.idle_ticks <= ACTIVE_WINDOW,
-            "buys": self.buys_tick, "sol_max": round(self.sol_max_tick, 2), "bver": self.version,
+            "buys": self.buys_tick, "sol_max": round(self.sol_max_tick, 2), "bver": self.version, "volumen": round(self.volume, 2),
             "local": {"short": a[1], "name": a[0], "color": a[2], "goles": m.ga, "atk": round(m.atk_a)},
             "visita": {"short": b[1], "name": b[0], "color": b[2], "goles": m.gb, "atk": round(m.atk_b)},
             "campeon": (CHAINS[self.champion][1] if self.champion is not None else None),
