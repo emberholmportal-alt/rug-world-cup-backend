@@ -800,9 +800,18 @@ function meterHTML(pct,color){
  for(let i=0;i<segs;i++) h+='<i class="'+(i<lit?'on':'')+'"></i>';
  return h+'</span>';
 }
+/* choque de kit: si el visitante tiene un color muy parecido al local, usa una camiseta contrastante */
+function _hex2rgb(h){ h=h.replace('#',''); return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]; }
+function _lum(c){ return 0.2126*c[0]+0.7152*c[1]+0.0722*c[2]; }
+function awayKit(homeHex, awayHex){
+  var h=_hex2rgb(homeHex), a=_hex2rgb(awayHex);
+  var d=Math.sqrt(Math.pow(h[0]-a[0],2)+Math.pow(h[1]-a[1],2)+Math.pow(h[2]-a[2],2));
+  if(d>=110) return awayHex;                      // contrastan: visitante usa su color
+  return _lum(h)>140 ? "#15151f" : "#eaeaea";     // chocan: oscuro si local claro, claro si local oscuro
+}
 function meterRowHTML(m){
  return '<div class="meter-row"><span class="ml">'+m.home.short+'</span>'+meterHTML(m.atkH,m.home.color)+'<span class="mp">'+Math.round(m.atkH)+'%</span></div>'
-   +'<div class="meter-row"><span class="ml">'+m.away.short+'</span>'+meterHTML(m.atkA,m.away.color)+'<span class="mp">'+Math.round(m.atkA)+'%</span></div>';
+   +'<div class="meter-row"><span class="ml">'+m.away.short+'</span>'+meterHTML(m.atkA,awayKit(m.home.color,m.away.color))+'<span class="mp">'+Math.round(m.atkA)+'%</span></div>';
 }
 function playsHTML(m){
  if(m.events.length===0) return '<div class="hint">'+i18n('waitingPlays')+'</div>';
@@ -1336,10 +1345,10 @@ function init3D(){
   g.scale.setScalar(1.4); scene.add(g); return {g,legL,legR,armL,armR,face};
  }
  function spawnTeam(jersey,team,n){ for(let i=0;i<n;i++){ const p=makePlayer(jersey); p.team=team; p.faceToken=nextFace(); p.off=Math.random()*6.28; p.spread=1.4+Math.random()*2.6; p.phase=Math.random()*6.28; p.tumble=0; p.biasX=(team==="home"?1:-1)*(0.6+i*0.9); p.g.position.set(p.biasX,0,(Math.random()*4-2)-1); players.push(p); } }
- spawnTeam(S.match.home.color,"home",3); spawnTeam(S.match.away.color,"away",3);
+ spawnTeam(S.match.home.color,"home",3); spawnTeam(awayKit(S.match.home.color,S.match.away.color),"away",3);
  function tumbleRandom(){ const p=players[rint(players.length)]; if(p) p.tumble=1; }
  let lastTeamKey=S.match.home.short+S.match.away.short;
- function recolor(){ const m=S.match; faceBag=[]; players.forEach(p=>{ p.subPhase=0; const col=p.team==="home"?m.home.color:m.away.color; p.g.children[0].material.color.set(col); p.faceToken=nextFace(); }); setupFaces(); }
+ function recolor(){ const m=S.match; faceBag=[]; players.forEach(p=>{ p.subPhase=0; const col=p.team==="home"?m.home.color:awayKit(m.home.color,m.away.color); p.g.children[0].material.color.set(col); p.faceToken=nextFace(); }); setupFaces(); }
  // ===================== CAMBIOS DE JUGADORES (sustituciones)
  let lastSubT=0;
  function faceImgSrc(tok){ try{ const k=tok[0]==="@"?tok.slice(1):tok; if(tok[0]==="@" && typeof MEME_IMG!=="undefined" && MEME_IMG[k]) return MEME_IMG[k]; const tex=memeTex(tok); const im=tex&&tex.image; if(im){ if(im.toDataURL) return im.toDataURL(); if(im.src) return im.src; } }catch(e){} return ""; }
