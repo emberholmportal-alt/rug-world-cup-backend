@@ -97,6 +97,11 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
 @keyframes cmsgin{ from{ opacity:0; transform:translateX(-8px); } }
 .cmsg .cu{ font-family:'Press Start 2P'; font-size:9px; margin-right:7px; }
 .cmsg .ct{ color:var(--txt); }
+.cmsg.cmt{ display:flex; align-items:baseline; gap:6px; }
+.cmsg.cmt .ct{ flex:1; min-width:0; }
+.clike,.cdel{ flex:none; background:none; border:0; cursor:pointer; font-family:'Press Start 2P'; font-size:8px; line-height:1; padding:2px 3px; color:var(--mut); }
+.clike.on{ color:var(--magenta); }
+.clike:hover,.cdel:hover{ color:var(--amber-l); }
 .chat-live{ margin-top:12px; border-top:2px dashed var(--line); padding-top:10px; max-height:140px; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-end; }
 .chat-live .clh{ font-family:'Press Start 2P'; font-size:9px; color:var(--mut); margin-bottom:6px; }
 .chatbox{ flex:1; min-height:60px; overflow-y:auto; display:flex; flex-direction:column; gap:6px; }
@@ -527,51 +532,17 @@ const HEADLINES={
  "💀 {A} vs {B} suspended: both rugged at the same time"
  ]
 };
-/* chat del público (estilo pump.fun live) */
-const CHAT_USERS=["0xRekt","diamondhand","exitliq","ngmi_anon","topblaster","cope_dealer","rugpull_god","gm_degen","fomo_frank","paperhandz","wenmoon","jeetking","saylor_fan","liquidated","based_chad","anon4202","gas_gwei","probably.nothing","chartwizard","downbad"];
-const CHAT_MSGS={
- es:["LFG 🚀","wen golden rug","compren frenteee","esto se va a 0 💀","gm degens","quién vende?? 👀","paper hands ngmi","el arquero ataja todo jajaja","VAR comprado 100%","mi bag llora 😭","sigue subiendo???","rug inc 🪤","verde verde verde 🟢"," serio este proyecto?"," slurp slurp","compré el top otra vez","alguien con info?","fundamentales sólidos (no)","esto es la nueva FIFA","jaja me encanta","dale bola al 9","penales o nada","todo bien todo legal 😏","aguante el caos","2 sol más y entro","ya estoy adentro 🫡","la liquidez tiembla","comprando la baja","mira ese ataque 🔥","esto rugea seguro"],
- en:["LFG 🚀","wen golden rug","buy now ffs","this goes to 0 💀","gm degens","who's selling?? 👀","paper hands ngmi","keeper saves everything lmao","VAR 100% bought","my bag is crying 😭","still pumping???","rug inc 🪤","green green green 🟢","is this project legit?","slurp slurp","aped the top again","anyone got alpha?","solid fundamentals (not)","this is the new FIFA","lol i love this","pass it to the 9","penalties or nothing","all good all legal 😏","long live the chaos","2 more sol and im in","already in 🫡","liquidity is shaking","buying the dip","look at that attack 🔥","this rugs for sure"]
-};
-const CHAT_EV={
- es:{
- GOL:["GOOOOL ⚽🔥","GOLAZO de {T}!!","ese gol lo pagué yo 😎","carga el ataque papá","{T} imparable"],
- ROJA:["ROJA jajaja 🟥","expulsado y con razón","{T} con 10 jugadores 💀","el árbitro lo echó"],
- AMARILLA:["amarilla turbia 🟨","árbitro comprado","ojito {T}"],
- RUG:["NOS RUGGEARON 💀🪤","sabía que {T} era rug","exit liquidity confirmado","corran 🏃"],
- CORRUPCION:["sobornaron al comité 💸","todo arreglado jaja","{T} pagó la coima"],
- LESION:["uy se lesionó el TPS 🩹","abajo el {T}"],
- SPONSOR:["{T} consiguió sponsor 🤝","plata es plata"]
- },
- en:{
- GOL:["GOOOOAL ⚽🔥","SCREAMER from {T}!!","i paid for that goal 😎","charge the attack baby","{T} unstoppable"],
- ROJA:["RED card lmao 🟥","sent off and rightly so","{T} down to 10 💀","ref tossed him"],
- AMARILLA:["shady yellow 🟨","bought ref","watch it {T}"],
- RUG:["WE GOT RUGGED 💀🪤","knew {T} was a rug","exit liquidity confirmed","run 🏃"],
- CORRUPCION:["bribed the committee 💸","totally rigged lol","{T} paid the bribe"],
- LESION:["oof the TPS got injured 🩹","{T} is down"],
- SPONSOR:["{T} landed a sponsor 🤝","money is money"]
- }
-};
-/* === CHAT EN VIVO REAL (opcional) ===========================================
-   Para que aparezcan comentarios REALES de la gente en tiempo real:
-   1) Creá un proyecto gratis en https://supabase.com
-   2) En el SQL editor corré:
-        create table mensajes (
-          id bigint generated always as identity primary key,
-          created_at timestamptz default now(),
-          usuario text, texto text
-        );
-        alter table mensajes enable row level security;
-        create policy "lectura publica" on mensajes for select using (true);
-        create policy "insertar publico" on mensajes for insert with check (true);
-   3) Database -> Replication: activá Realtime para la tabla 'mensajes'.
-   4) Pegá tu URL y anon key abajo. Si quedan vacías => chat simulado.
-============================================================================ */
-const REALTIME={ url:"", key:"" };
-const MYNAME="degen"+Math.floor(Math.random()*9999);
-let realChat=false, supa=null;
-let userNick=MYNAME, lastCommentAt=0; const COOLDOWN=30000;
+/* ====== comentarios reales (backend REST + WS) ====== */
+const BACKEND_HTTP="https://rug-world-cup-backend.onrender.com";
+function rwcToken(){ try{ let t=localStorage.getItem("rwc_token"); if(!t){ t=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("t-"+Date.now().toString(36)+Math.random().toString(36).slice(2)); localStorage.setItem("rwc_token",t); } return t; }catch(e){ return "t-"+Math.random().toString(36).slice(2); } }
+const RWC_TOKEN=rwcToken();
+function loadNick(){ try{ return localStorage.getItem("rwc_nick")||""; }catch(e){ return ""; } }
+function saveNick(n){ try{ localStorage.setItem("rwc_nick",n); }catch(e){} }
+function loadIdSet(k){ try{ return new Set(JSON.parse(localStorage.getItem(k)||"[]")); }catch(e){ return new Set(); } }
+function saveIdSet(k,s){ try{ localStorage.setItem(k,JSON.stringify(Array.from(s).slice(-500))); }catch(e){} }
+const likedIds=loadIdSet("rwc_liked"), ownedIds=loadIdSet("rwc_owned");
+let userNick=loadNick()||("degen"+Math.floor(Math.random()*9999));
+let lastCommentAt=0; const COOLDOWN=20000;
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 function cooldownLeft(){ return Math.max(0, Math.ceil((COOLDOWN-(Date.now()-lastCommentAt))/1000)); }
 /* ============================ i18n (EN por defecto + ES) */
@@ -922,10 +893,29 @@ function applyLang(){
 
 /* ====================================================== CHAT del público */
 const CHAT_COLORS=["#ffb02e","#36e0d0","#3ddc84","#ff3d7f","#ffd27a","#b06bff","#4da2ff","#ff8a3d"];
+/* almacén de comentarios reales (dedup por id) */
+const cById=new Map();
+function trimChat(){ while(S.chat.length>220){ const rm=S.chat.shift(); if(rm&&rm.id!=null) cById.delete(rm.id); } }
+function normComment(r){ return {id:r.id, u:r.nick||"anon", m:r.body||"", c:colorFor(r.nick||"anon"), likes:r.likes||0, parent_id:(r.parent_id!=null?r.parent_id:null), deleted:!!r.deleted, liked:likedIds.has(r.id), mine:ownedIds.has(r.id)}; }
+function upsertComment(r,opts){
+ opts=opts||{};
+ const ex=cById.get(r.id);
+ if(ex){ ex.u=r.nick||ex.u; ex.c=colorFor(ex.u); ex.m=r.body||""; if(r.likes!=null) ex.likes=r.likes; ex.deleted=!!r.deleted; ex.mine=ex.mine||ownedIds.has(r.id); ex.liked=likedIds.has(r.id); }
+ else { const c=normComment(r); cById.set(c.id,c); S.chat.push(c); trimChat(); if(opts.ticker) tickerPush(c); }
+ if(!opts.silent){ if(S.section==="chat") renderChatBox(); renderSideChat(); }
+}
+function commentLineHTML(c){
+ if(c.sys) return '<div class="cmsg"><span class="cu" style="color:'+c.c+'">'+esc(c.u)+'</span><span class="ct">'+esc(c.m)+'</span></div>';
+ const body=c.deleted?'<i style="color:var(--mut)">'+(LANG==="es"?"— borrado —":"— deleted —")+'</i>':esc(c.m);
+ let h='<div class="cmsg cmt" data-id="'+c.id+'"><span class="cu" style="color:'+c.c+'">'+esc(c.u)+'</span><span class="ct">'+body+'</span>';
+ if(!c.deleted) h+='<button class="clike'+(c.liked?' on':'')+'" data-act="like" data-id="'+c.id+'" title="like">♥ '+(c.likes||0)+'</button>';
+ if(c.mine&&!c.deleted) h+='<button class="cdel" data-act="del" data-id="'+c.id+'" title="'+(LANG==="es"?"borrar":"delete")+'">✕</button>';
+ return h+'</div>';
+}
+/* mensajes de sistema del torneo (sin id, no comentables) */
 function pushChat(user,msg,color){
- const c={u:user,m:msg,c:color||colorFor(user)};
- S.chat.push(c);
- if(S.chat.length>120) S.chat.shift();
+ const c={u:user,m:msg,c:color||colorFor(user),sys:true};
+ S.chat.push(c); trimChat();
  if(S.section==="chat") renderChatBox();
  renderSideChat(); tickerPush(c);
 }
@@ -945,63 +935,86 @@ function pushBuy(sol, team){
 }
 function colorFor(name){ let h=0,s=String(name||""); for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0; return CHAT_COLORS[h%CHAT_COLORS.length]; }
 function renderSideChat(){ const box=$("#aboutChat"); if(!box) return; box.innerHTML=S.chat.slice(-9).map(c=>'<div class="cmsg"><span class="cu" style="color:'+c.c+'">'+esc(c.u)+'</span><span class="ct">'+esc(c.m)+'</span></div>').join(""); }
-function chatFor(type,team){
- if(realChat) return; // con chat real, reaccionan las personas
- const arr=(CHAT_EV[LANG]||CHAT_EV.en)[type];
- if(arr && Math.random()<0.6){ pushChat(pick(CHAT_USERS), pick(arr).replace("{T}",team?team.name:""), null); }
-}
+function chatFor(){ /* reacciones fake retiradas: ahora el chat son comentarios reales */ }
 function renderChatBox(){
  const box=$("#chatbox"); if(!box) return;
- box.innerHTML=S.chat.slice(-60).map(c=>'<div class="cmsg"><span class="cu" style="color:'+c.c+'">'+esc(c.u)+'</span><span class="ct">'+esc(c.m)+'</span></div>').join("");
+ box.innerHTML=S.chat.slice(-80).map(commentLineHTML).join("");
  box.scrollTop=box.scrollHeight;
 }
 function startCooldownUI(){ const tick=()=>{ const sb=$("#csend"); if(!sb) return; const l=cooldownLeft(); const cc=$("#ccool"); if(l<=0){ sb.disabled=false; sb.classList.remove("cool"); sb.textContent="ENVIAR"; if(cc) cc.textContent=""; return; } sb.disabled=true; sb.classList.add("cool"); sb.textContent=l+"s"; if(cc) cc.textContent="⏳ esperá "+l+"s para volver a comentar"; setTimeout(tick,400); }; tick(); }
 function renderChat(){
- const estado = realChat ? '<span class="s" style="color:var(--green)">● en vivo · conectado</span>' : '<span class="s">simple · anti-spam 30s</span>';
+ const estado='<span class="s" style="color:var(--green)">● '+(LANG==="es"?"en vivo · comentarios reales":"live · real comments")+'</span>';
  let h='<div class="panel chat-panel"><div class="panel-h"><span class="h">COMENTARIOS</span>'+estado+'</div><div class="pbody">';
- h+='<div class="nickrow"><span class="nl">NICK</span><input id="cnick" maxlength="16" value="'+esc(userNick)+'" placeholder="tu nick"></div>';
+ h+='<div class="nickrow"><span class="nl">NICK</span><input id="cnick" maxlength="24" value="'+esc(userNick)+'" placeholder="tu nick"></div>';
  h+='<div class="chatbox" id="chatbox"></div>';
- h+='<div class="cinput"><input id="cin" maxlength="140" placeholder="dejá tu comentario…"><button id="csend">ENVIAR</button></div>';
+ h+='<div class="cinput"><input id="cin" maxlength="280" placeholder="dejá tu comentario…"><button id="csend">ENVIAR</button></div>';
  h+='<div class="ccool" id="ccool"></div>';
  h+='</div></div>';
  setScreen(h);
  renderChatBox();
+ const box=$("#chatbox");
+ if(box) box.onclick=(e)=>{ const b=e.target&&e.target.closest&&e.target.closest('button[data-act]'); if(!b) return; const id=+b.getAttribute('data-id'), act=b.getAttribute('data-act'); if(act==="like") toggleLike(id); else if(act==="del") deleteComment(id); };
  const send=()=>{ const inp=$("#cin"); if(!inp) return; const v=inp.value.trim(); if(!v) return;
    if(cooldownLeft()>0){ startCooldownUI(); return; }
-   const nk=$("#cnick"); if(nk && nk.value.trim()) userNick=nk.value.trim().slice(0,16);
-   inp.value=""; lastCommentAt=Date.now(); blip("sel");
-   if(realChat && supa){ supa.from("mensajes").insert({usuario:userNick,texto:v}); }
-   else { pushChat(userNick,"💬 "+v, colorFor(userNick)); }
-   startCooldownUI(); };
+   const nk=$("#cnick"); if(nk && nk.value.trim()){ userNick=nk.value.trim().slice(0,24); saveNick(userNick); }
+   inp.value=""; blip("sel");
+   postComment(v); };
  const sb=$("#csend"), ci=$("#cin");
  if(sb) sb.onclick=send;
  if(ci) ci.onkeydown=(e)=>{ if(e.key==="Enter") send(); };
  startCooldownUI();
 }
-/* conexión opcional a Supabase Realtime */
-function loadRealChat(){
- if(!REALTIME.url||!REALTIME.key) return;
- const sc=document.createElement("script");
- sc.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
- sc.onload=initRealChat; sc.onerror=()=>console.warn("RWC: no se pudo cargar supabase-js");
- document.head.appendChild(sc);
+/* ====== API de comentarios (REST hacia BACKEND_HTTP + reacción a eventos WS) ====== */
+function commentError(msg){ const cc=$("#ccool"); if(cc) cc.textContent="⚠ "+msg; }
+function loadComments(){
+ fetch(BACKEND_HTTP+"/api/comments?limit=200").then(r=>r.ok?r.json():Promise.reject(r.status)).then(list=>{
+   if(!Array.isArray(list)) return;
+   list.slice().reverse().forEach(r=>upsertComment(r,{silent:true}));  // backend manda id DESC -> mostramos ASC
+   if(S.section==="chat") renderChatBox();
+   renderSideChat();
+ }).catch(()=>{});
 }
-function initRealChat(){
- try{ supa=window.supabase.createClient(REALTIME.url,REALTIME.key); }catch(e){ console.warn("RWC supabase:",e); return; }
- realChat=true; S.chat=[];
- const st=$("#aboutChatState"); if(st){ st.textContent="● en vivo"; st.classList.add("live"); }
- supa.from("mensajes").select("*").order("created_at",{ascending:true}).limit(60).then(({data})=>{
-   if(data){ data.forEach(r=>S.chat.push({u:r.usuario||"anon",m:r.texto||"",c:colorFor(r.usuario)})); renderSideChat(); if(S.section==="chat"){renderChatBox();renderChat();} }
- });
- supa.channel("rwc-chat").on("postgres_changes",{event:"INSERT",schema:"public",table:"mensajes"},p=>{
-   const r=p.new; S.chat.push({u:r.usuario||"anon",m:r.texto||"",c:colorFor(r.usuario)}); if(S.chat.length>120)S.chat.shift();
-   renderSideChat(); if(S.section==="chat") renderChatBox();
- }).subscribe();
+function postComment(body){
+ fetch(BACKEND_HTTP+"/api/comments",{method:"POST",headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({nick:userNick,body:body,parent_id:null,token:RWC_TOKEN})})
+ .then(async r=>{
+   if(r.status===429){ let j={}; try{ j=await r.json(); }catch(e){} const sec=(j.retry||(COOLDOWN/1000)); lastCommentAt=Date.now()-(COOLDOWN-sec*1000); startCooldownUI(); return null; }
+   if(!r.ok){ let j={}; try{ j=await r.json(); }catch(e){} commentError((j&&j.error)||("error "+r.status)); return null; }
+   return r.json();
+ }).then(cmt=>{
+   if(!cmt||cmt.id==null) return;
+   ownedIds.add(cmt.id); saveIdSet("rwc_owned",ownedIds);
+   upsertComment(cmt,{ticker:true});          // también llegará por WS: dedup por id
+   lastCommentAt=Date.now(); startCooldownUI();
+ }).catch(()=>{ commentError(LANG==="es"?"sin conexión":"no connection"); });
+}
+function toggleLike(id){
+ const c=cById.get(id); if(!c||c.deleted) return;
+ const want=!likedIds.has(id);
+ if(want){ likedIds.add(id); c.liked=true; c.likes=(c.likes||0)+1; }
+ else { likedIds.delete(id); c.liked=false; c.likes=Math.max(0,(c.likes||0)-1); }
+ saveIdSet("rwc_liked",likedIds);
+ if(S.section==="chat") renderChatBox();
+ const url=BACKEND_HTTP+"/api/comments/"+id+"/like";
+ const req=want?fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:RWC_TOKEN})})
+              :fetch(url+"?token="+encodeURIComponent(RWC_TOKEN),{method:"DELETE"});
+ req.catch(()=>{});   // el conteo autoritativo llega por WS comment_like
+}
+function deleteComment(id){
+ const c=cById.get(id); if(!c||!c.mine) return;
+ fetch(BACKEND_HTTP+"/api/comments/"+id+"?token="+encodeURIComponent(RWC_TOKEN),{method:"DELETE"}).catch(()=>{});
+ // el WS comment_del lo marcará borrado para todos
+}
+function applyCommentWS(s){
+ if(s.type==="comment_new"){ upsertComment(s.comment,{ticker:true}); }
+ else if(s.type==="comment_edit"){ if(s.comment) upsertComment(s.comment); }
+ else if(s.type==="comment_del"){ const c=cById.get(s.id); if(c){ c.deleted=true; c.m=""; if(S.section==="chat") renderChatBox(); renderSideChat(); } }
+ else if(s.type==="comment_like"){ const c=cById.get(s.id); if(c){ c.likes=s.likes; if(S.section==="chat") renderChatBox(); } }
 }
 function chatLiveBody(){
  const last=S.chat.slice(-4);
  if(!last.length) return '<div class="clh">📺 PÚBLICO</div>';
- return '<div class="clh">📺 PÚBLICO</div>'+last.map(c=>'<div class="cmsg"><span class="cu" style="color:'+c.c+'">'+c.u+'</span><span class="ct">'+c.m+'</span></div>').join("");
+ return '<div class="clh">📺 PÚBLICO</div>'+last.map(c=>'<div class="cmsg"><span class="cu" style="color:'+c.c+'">'+esc(c.u)+'</span><span class="ct">'+(c.deleted?"—":esc(c.m))+'</span></div>').join("");
 }
 
 /* ====================================================== ACCIÓN: COMPRA */
@@ -1274,16 +1287,14 @@ function connectBackend(){
  if(typeof WebSocket==="undefined") return;
  try{ srvWS=new WebSocket(BACKEND_WS); }catch(e){ srvTries++; setTimeout(connectBackend, Math.min(8000,1000*srvTries)); return; }
  srvWS.onopen=function(){ srvTries=0; try{ setFeedState("live"); }catch(e){} };
- srvWS.onmessage=function(ev){ var s; try{ s=JSON.parse(ev.data); }catch(e){ return; } if(s&&s.type==="state") applyState(s); else if(s&&s.type==="bracket") applyBracket(s); };
+ srvWS.onmessage=function(ev){ var s; try{ s=JSON.parse(ev.data); }catch(e){ return; } if(!s||!s.type) return; if(s.type==="state") applyState(s); else if(s.type==="bracket") applyBracket(s); else if(s.type.indexOf("comment_")===0) applyCommentWS(s); };
  srvWS.onclose=function(){ try{ setFeedState("reconnecting"); }catch(e){} srvTries++; setTimeout(connectBackend, Math.min(8000,1000*srvTries)); };
  srvWS.onerror=function(){ try{ srvWS.close(); }catch(e){} };
 }
 connectBackend();
 setInterval(()=>{ S.headlines.unshift(makeHeadline()); if(S.headlines.length>12)S.headlines.length=12; renderTopbar(); },6500);
-/* chat: mensajes del público cada ~2.5s */
-for(let i=0;i<6;i++) pushChat(pick(CHAT_USERS), pick(CHAT_MSGS[LANG]||CHAT_MSGS.en), null);
-function chatTick(){ if(!realChat){ pushChat(pick(CHAT_USERS), pick(CHAT_MSGS[LANG]||CHAT_MSGS.en), null); } setTimeout(chatTick, 1800+Math.random()*2200); }
-setTimeout(chatTick, 2000);
+/* comentarios reales: carga inicial desde el backend (los nuevos llegan por WS) */
+loadComments();
 
 /* ====================================================== AUDIO */
 let actx=null;
@@ -1654,7 +1665,6 @@ function init3D(){
 
 /* ====================================================== ARRANQUE */
 preloadLogos();
-loadRealChat();
 renderTopbar();
 $("#marq").textContent=S.headlines[0];
 applyLang();
