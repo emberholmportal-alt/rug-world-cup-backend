@@ -1178,11 +1178,23 @@ setInterval(()=>{ S.headlines.unshift(makeHeadline()); if(S.headlines.length>12)
 /* ====================================================== AUDIO */
 let actx=null;
 function ensureAudio(){ if(!actx){ try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(actx&&actx.state==="suspended"){ try{actx.resume();}catch(e){} } }
+/* ---- sonidos por ARCHIVO (mp3 en la raíz; rutas relativas para el Static Site) ---- */
+var AUD = { amb:new Audio('estadio.mp3'), gol:new Audio('gol.mp3'), sil:new Audio('silbato.mp3'), _last:{} };
+AUD.amb.loop = true; AUD.amb.volume = 0.35; AUD.gol.volume = 0.9; AUD.sil.volume = 0.85;
+function playAud(w){ if(!S.sound) return; var a=AUD[w]; if(!a) return; var n=performance.now(); if(n-(AUD._last[w]||0)<250) return; AUD._last[w]=n; try{ a.currentTime=0; a.play(); }catch(e){} }
+function startAmbience(){ if(!S.sound) return; try{ AUD.amb.play(); }catch(e){} }
+function stopAmbience(){ try{ AUD.amb.pause(); }catch(e){} }
+/* el ambiente no puede arrancar solo (autoplay): se desbloquea en el primer gesto del usuario */
+var _audioUnlocked=false;
+function unlockAudio(){ if(_audioUnlocked) return; _audioUnlocked=true; ensureAudio(); if(S.sound) startAmbience(); }
+['click','touchstart','keydown'].forEach(function(e){ window.addEventListener(e, unlockAudio); });
 function tone(freq,start,dur,type,vol){ const o=actx.createOscillator(),g=actx.createGain(); o.type=type||"square"; o.frequency.setValueAtTime(freq,start); o.connect(g); g.connect(actx.destination); g.gain.setValueAtTime(0.0001,start); g.gain.exponentialRampToValueAtTime(vol||0.05,start+0.012); g.gain.exponentialRampToValueAtTime(0.0001,start+dur); o.start(start); o.stop(start+dur+0.03); }
 function sweep(f0,f1,start,dur,type,vol){ const o=actx.createOscillator(),g=actx.createGain(); o.type=type||"sawtooth"; o.frequency.setValueAtTime(f0,start); o.frequency.exponentialRampToValueAtTime(f1,start+dur); o.connect(g); g.connect(actx.destination); g.gain.setValueAtTime(vol||0.05,start); g.gain.exponentialRampToValueAtTime(0.0001,start+dur); o.start(start); o.stop(start+dur+0.03); }
 function noise(start,dur,vol,freq){ const n=Math.floor(actx.sampleRate*dur),buf=actx.createBuffer(1,n,actx.sampleRate),d=buf.getChannelData(0); for(let i=0;i<n;i++) d[i]=Math.random()*2-1; const src=actx.createBufferSource(); src.buffer=buf; const bp=actx.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=freq||1000; bp.Q.value=0.7; const g=actx.createGain(); g.gain.setValueAtTime(0.0001,start); g.gain.linearRampToValueAtTime(vol||0.04,start+dur*0.3); g.gain.exponentialRampToValueAtTime(0.0001,start+dur); src.connect(bp); bp.connect(g); g.connect(actx.destination); src.start(start); src.stop(start+dur); }
 function blip(kind){ if(!S.sound||!actx) return; const t=actx.currentTime,f=kind==="confirm"?660:kind==="sel"?520:kind==="buy"?300:440; tone(f,t,0.08,"square",kind==="buy"?0.03:0.05); }
 function sfx(name){
+ if(name==="goal"){ playAud('gol'); return; }
+ if(name==="whistle"){ playAud('sil'); return; }
  if(!S.sound||!actx) return; const t=actx.currentTime;
  if(name==="goal"){ [523,659,784,1046].forEach((f,i)=>tone(f,t+i*0.09,0.2,"square",0.06)); noise(t+0.04,0.95,0.06,820); }
  else if(name==="whistle"){ tone(2250,t,0.10,"square",0.045); tone(2250,t+0.14,0.17,"square",0.045); }
@@ -1202,7 +1214,7 @@ function startGame(){
 }
 $("#title").addEventListener("click",startGame);
 /* botones SIMULATE BUY / AUTO retirados: la página es solo transmisión en vivo (las compras llegan del server) */
-$("#tbSnd").addEventListener("click",()=>{ S.sound=!S.sound; $("#tbSnd").textContent=S.sound?"🔊":"🔇"; ensureAudio(); blip("sel"); });
+$("#tbSnd").addEventListener("click",()=>{ S.sound=!S.sound; $("#tbSnd").textContent=S.sound?"🔊":"🔇"; ensureAudio(); if(S.sound) startAmbience(); else stopAmbience(); blip("sel"); });
 $("#tbLang").addEventListener("click",()=>{ LANG=(LANG==="en")?"es":"en"; applyLang(); blip("sel"); });
 window.addEventListener("keydown",e=>{
  if(e.target && (e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")) return;
