@@ -97,11 +97,6 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
 @keyframes cmsgin{ from{ opacity:0; transform:translateX(-8px); } }
 .cmsg .cu{ font-family:'Press Start 2P'; font-size:9px; margin-right:7px; }
 .cmsg .ct{ color:var(--txt); }
-.cmsg.cmt{ display:flex; align-items:baseline; gap:6px; }
-.cmsg.cmt .ct{ flex:1; min-width:0; }
-.clike,.cdel{ flex:none; background:none; border:0; cursor:pointer; font-family:'Press Start 2P'; font-size:8px; line-height:1; padding:2px 3px; color:var(--mut); }
-.clike.on{ color:var(--magenta); }
-.clike:hover,.cdel:hover{ color:var(--amber-l); }
 .chat-live{ margin-top:12px; border-top:2px dashed var(--line); padding-top:10px; max-height:140px; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-end; }
 .chat-live .clh{ font-family:'Press Start 2P'; font-size:9px; color:var(--mut); margin-bottom:6px; }
 .chatbox{ flex:1; min-height:60px; overflow-y:auto; display:flex; flex-direction:column; gap:6px; }
@@ -122,7 +117,7 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
 #ticker{ position:fixed; left:0; right:0; bottom:0; top:auto; height:30px; z-index:35; display:none; overflow:hidden;
   background:linear-gradient(90deg, rgba(5,8,14,.92), rgba(8,14,24,.78)); border-bottom:2px solid var(--line); border-top:2px solid var(--line); align-items:center; }
 #ticker.on{ display:flex; }
-#ticker::before{ content:"💬"; flex:none; font-family:'Press Start 2P'; font-size:8px; color:var(--bg); background:var(--magenta); padding:8px 8px; height:100%; display:flex; align-items:center; }
+#ticker::before{ content:"📣"; flex:none; font-family:'Press Start 2P'; font-size:8px; color:var(--bg); background:var(--magenta); padding:8px 8px; height:100%; display:flex; align-items:center; }
 .tick-track{ display:inline-flex; white-space:nowrap; will-change:transform; padding-left:12px; }
 .tick-i{ font-size:17px; color:var(--txt); margin-right:28px; }
 .tick-i b{ font-family:'Press Start 2P'; font-size:10px; }
@@ -242,6 +237,37 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
 .mitem:hover{ transform:translateX(2px); border-color:var(--amber); }
 .mitem.on{ background:var(--amber); color:var(--bg); border-color:#05080e; box-shadow:5px 5px 0 #05080e; }
 .mitem.on .cur{ opacity:1; animation:blink 1s steps(2) infinite; }
+/* panel auto-rotativo (reemplaza el menú; mismo footprint de la columna izquierda) */
+.rotpanel{ width:100%; background:var(--panel); backdrop-filter:blur(3px); border:3px solid var(--line); border-radius:8px; padding:9px 10px; display:flex; flex-direction:column; gap:6px; min-height:0; cursor:pointer; user-select:none; }
+.rp-h{ display:flex; align-items:center; gap:6px; }
+.rp-tag{ font-family:'Press Start 2P'; font-size:8px; color:var(--bg); background:var(--amber); padding:4px 6px; border-radius:3px; }
+.rp-live-dot{ width:7px; height:7px; border-radius:50%; background:var(--green); margin-left:auto; animation:blink 1s steps(2) infinite; }
+.rp-body{ flex:1; min-height:104px; display:flex; flex-direction:column; gap:5px; overflow:hidden; }
+.rp-title{ font-family:'Press Start 2P'; font-size:9px; color:var(--amber-l); line-height:1.4; }
+.rp-sub,.rp-foot{ font-size:12px; color:var(--mut); }
+.rp-foot{ margin-top:2px; }
+.rp-match{ display:flex; align-items:center; gap:6px; margin-top:3px; }
+.rp-tm{ display:flex; align-items:center; gap:4px; font-size:13px; color:var(--txt); }
+.rp-tm.rev{ flex-direction:row-reverse; margin-left:auto; }
+.rp-tm b{ font-family:'Press Start 2P'; font-size:9px; }
+.rp-sc{ font-family:'Press Start 2P'; font-size:12px; color:#ffe9b0; }
+.rp-min{ font-size:12px; color:var(--cyan); }
+.rp-tbl{ display:flex; flex-direction:column; gap:3px; }
+.rp-trow{ display:flex; align-items:center; gap:5px; font-size:13px; padding:2px 4px; border-left:3px solid transparent; }
+.rp-trow.q{ border-left-color:var(--green); background:rgba(61,220,132,.08); }
+.rp-pos{ font-family:'Press Start 2P'; font-size:8px; color:var(--mut); width:10px; }
+.rp-nm{ flex:1; }
+.rp-dg{ color:var(--mut); font-size:12px; width:28px; text-align:right; }
+.rp-pts{ font-family:'Press Start 2P'; font-size:9px; color:var(--amber-l); width:22px; text-align:right; }
+.rp-winners{ display:flex; flex-wrap:wrap; gap:4px; }
+.rp-win{ display:flex; align-items:center; gap:3px; font-size:12px; border:1px solid var(--line); padding:2px 4px; border-radius:3px; }
+.rp-live{ font-size:12px; color:var(--green); margin-top:3px; }
+.rp-champ{ display:flex; align-items:center; gap:7px; font-size:15px; color:var(--amber-l); }
+.rp-third{ font-size:12px; color:var(--mut); }
+.rp-dots{ display:flex; gap:4px; justify-content:center; flex-wrap:wrap; margin-top:auto; padding-top:4px; }
+.rp-dot{ width:6px; height:6px; border-radius:50%; background:var(--line); }
+.rp-dot.on{ background:var(--amber); }
+.hud-phase{ font-family:'Press Start 2P'; font-size:7px; color:var(--cyan); text-align:center; line-height:1.45; margin-bottom:1px; }
 .mfoot{ margin-top:auto; font-size:16px; color:var(--mut); padding:6px 2px; }
 
 .screen{ flex:1; min-width:0; overflow:hidden; position:relative; }
@@ -411,7 +437,7 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
   <div id="shell">
     <div class="leftcol">
       <div id="hudbar" class="hudbar"></div>
-      <nav class="menu" id="menu"></nav>
+      <nav class="rotpanel" id="rotpanel"></nav>
     </div>
     <div class="screen"><div class="scr" id="screen"></div></div>
   </div>
@@ -532,19 +558,7 @@ const HEADLINES={
  "💀 {A} vs {B} suspended: both rugged at the same time"
  ]
 };
-/* ====== comentarios reales (backend REST + WS) ====== */
-const BACKEND_HTTP="https://rug-world-cup-backend.onrender.com";
-function rwcToken(){ try{ let t=localStorage.getItem("rwc_token"); if(!t){ t=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():("t-"+Date.now().toString(36)+Math.random().toString(36).slice(2)); localStorage.setItem("rwc_token",t); } return t; }catch(e){ return "t-"+Math.random().toString(36).slice(2); } }
-const RWC_TOKEN=rwcToken();
-function loadNick(){ try{ return localStorage.getItem("rwc_nick")||""; }catch(e){ return ""; } }
-function saveNick(n){ try{ localStorage.setItem("rwc_nick",n); }catch(e){} }
-function loadIdSet(k){ try{ return new Set(JSON.parse(localStorage.getItem(k)||"[]")); }catch(e){ return new Set(); } }
-function saveIdSet(k,s){ try{ localStorage.setItem(k,JSON.stringify(Array.from(s).slice(-500))); }catch(e){} }
-const likedIds=loadIdSet("rwc_liked"), ownedIds=loadIdSet("rwc_owned");
-let userNick=loadNick()||("degen"+Math.floor(Math.random()*9999));
-let lastCommentAt=0; const COOLDOWN=20000;
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
-function cooldownLeft(){ return Math.max(0, Math.ceil((COOLDOWN-(Date.now()-lastCommentAt))/1000)); }
 /* ============================ i18n (EN por defecto + ES) */
 let LANG='en';
 const TR={
@@ -668,7 +682,7 @@ function newMatch(){ var bk=S.bracket, a,b; if(bk&&bk.teams&&bk.teams.length>=2)
 const S={
  points:{},vol:{},match:null,feed:[],headlines:Array.from({length:8},makeHeadline),
  fees:12.4,buys:0,sold:0,auto:false,autoTimer:null,fixtures:Array.from({length:10},pair),
- section:"live",started:false,goalAt:0,sound:true,chat:[],srv:null,_lastChamp:null,srvBracket:null,
+ section:"live",started:false,goalAt:0,sound:true,chat:[],srv:null,_lastChamp:null,srvBracket:null,srvGroups:null,srvFase:null,
 };
 CHAINS.forEach(c=>{S.points[c[1]]=4+rint(13);S.vol[c[1]]=+(Math.random()*30).toFixed(1);});
 initBracket(); S.match=newMatch();
@@ -694,44 +708,93 @@ function flagHTML(c,size){
   +(c.logo?'<img class="flag-img" src="'+c.logo+'" alt="" loading="lazy" onload="var m=this.previousElementSibling; if(m) m.style.display=\'none\'" onerror="this.style.display=\'none\'">':'')
   +'</span>';
 }
-function derive(){
- const board=CHAINS.map((c,i)=>({...chain(i),pts:S.points[c[1]]||0,vol:S.vol[c[1]]||0})).sort((a,b)=>b.pts-a.pts);
- var _bn=(S.bracket?S.bracket.teams.length:16); var pIdx=0; for(var _k=0;_k<PHASES.length;_k++){ if(PHASES[_k].teams===_bn){ pIdx=_k; break; } } var cur=PHASES[pIdx],nextP=PHASES[pIdx+1]||null;
- const remain=nextP?Math.max(0,+(nextP.t-S.sold).toFixed(1)):0;
- const prog=nextP?Math.min(100,Math.max(0,((S.sold-cur.t)/(nextP.t-cur.t))*100)):100;
- return {board,pIdx,cur,nextP,remain,prog,elim:cur.elim};
-}
-
 /* ====================================================== RENDER: TOPBAR + ACTION */
 function renderTopbar(){
- const {cur,nextP,remain,prog}=derive();
  if(S.srv){ var _sN=Math.max(1,S.srv.partidos_ronda||1),_sP=S.srv.partido||1,_sR=(S.srv.ronda||"").toUpperCase(); $("#tbPhase").textContent=_sR; $("#tbFill").style.width=(Math.min(_sN,_sP)/_sN*100)+"%"; $("#tbProg").textContent="🏆 "+_sR+" · "+(LANG==="es"?"Partido ":"Match ")+_sP+"/"+_sN; } else { $("#tbPhase").textContent=roundNameFor(S.bracket?S.bracket.teams.length:16)[LANG].toUpperCase();
  $("#tbFill").style.width=(function(){var b=S.bracket,N=Math.max(1,(b?b.teams.length:16)/2);return (Math.min(N,b?b.pos:0)/N*100);})()+"%";
  $("#tbProg").textContent=(function(){var b=S.bracket,n=(b?b.teams.length:16),N=Math.max(1,n/2),pos=(b?b.pos:0),rn=roundNameFor(n);return "🏆 "+rn[LANG].toUpperCase()+" · "+(LANG==="es"?"Partido ":"Match ")+Math.min(N,pos+1)+"/"+N;})(); }
  $("#creds").textContent=i18n('hype')+" "+S.sold.toFixed(1)+"◎";
  $("#marq").textContent=S.headlines[0];
 }
-/* ====================================================== RENDER: MENU */
-const SECTIONS=[["live",{en:"LIVE",es:"EN VIVO"}],["grupos",{en:"GROUPS",es:"GRUPOS"}],["tabla",{en:"TABLE",es:"TABLA"}],["fixture",{en:"BRACKET",es:"LLAVES"}],["feed",{en:"FEED",es:"FEED"}],["chat",{en:"CHAT",es:"COMENTARIOS"}],["info",{en:"HOW TO",es:"CÓMO JUEGA"}]];
-function renderMenu(){
- let h='';
- SECTIONS.forEach(([id,label])=>{ h+='<button class="mitem'+(S.section===id?' on':'')+'" data-sec="'+id+'"><span class="cur">▶</span>'+(label[LANG]||label.en)+'</button>'; });
- $("#menu").innerHTML=h;
- $("#menu").querySelectorAll(".mitem").forEach(b=>b.onclick=()=>selectSection(b.dataset.sec));
+/* ====================================================== PANEL AUTO-ROTATIVO (estado real del torneo, data del server) */
+let rotIdx=0, rotTimer=null;
+function phaseLine(){
+ var s=S.srv; if(!s) return (LANG==="es"?"CONECTANDO…":"CONNECTING…");
+ if(s.fase==="grupos") return (LANG==="es"?"FASE DE GRUPOS":"GROUP STAGE")+" · "+(LANG==="es"?"Fecha ":"MD ")+(s.fecha!=null?s.fecha:"-")+" · "+(LANG==="es"?"Grupo ":"Group ")+(s.grupo!=null?s.grupo:"-");
+ return (s.ronda||"").toUpperCase()+" · "+(LANG==="es"?"Partido ":"Match ")+(s.partido||1)+"/"+(s.partidos_ronda||1);
 }
-/* ====================================================== RENDER: SCREEN */
+function rotSlides(){
+ var out=[{kind:"now"}], s=S.srv;
+ if(s && s.fase==="grupos" && S.srvGroups && S.srvGroups.length){
+  var gs=S.srvGroups.slice(), live=s.grupo, idx=-1;
+  if(live){ for(var i=0;i<gs.length;i++){ if(gs[i].grupo===live){ idx=i; break; } } if(idx>0) gs=gs.slice(idx).concat(gs.slice(0,idx)); }
+  gs.forEach(function(g){ out.push({kind:"group",g:g}); });
+ } else if(S.srvBracket && S.srvBracket.rounds && S.srvBracket.rounds.length){
+  S.srvBracket.rounds.forEach(function(r){ if(r&&r.matches&&r.matches.length) out.push({kind:"round",r:r}); });
+  if(S.srvBracket.campeon) out.push({kind:"champ"});
+ }
+ return out;
+}
+function slideNow(){
+ var m=S.match, s=S.srv;
+ var title=(s && s.fase==="grupos")?(LANG==="es"?"FASE DE GRUPOS":"GROUP STAGE"):(((s&&s.ronda)||"").toUpperCase()||(LANG==="es"?"MUNDIAL":"WORLD CUP"));
+ var sub=(s && s.fase==="grupos")
+   ?((LANG==="es"?"Fecha ":"MD ")+(s.fecha!=null?s.fecha:"-")+" · "+(LANG==="es"?"Grupo ":"Group ")+(s.grupo!=null?s.grupo:"-"))
+   :((LANG==="es"?"Partido ":"Match ")+((s&&s.partido)||1)+"/"+((s&&s.partidos_ronda)||1));
+ var h='<div class="rp-title">'+esc(title)+'</div><div class="rp-sub">'+esc(sub)+'</div>';
+ if(m&&m.home&&m.away){
+  h+='<div class="rp-match"><span class="rp-tm">'+flagHTML(m.home,18)+'<b>'+esc(m.home.short)+'</b></span>'
+    +'<span class="rp-sc">'+m.sh+' : '+m.sa+'</span>'
+    +'<span class="rp-tm rev"><b>'+esc(m.away.short)+'</b>'+flagHTML(m.away,18)+'</span></div>';
+  h+='<div class="rp-min">'+(m.min||0)+"'"+((s&&s.activo===false)?' · '+(LANG==="es"?"esperando compras":"waiting buys"):'')+'</div>';
+ }
+ return h;
+}
+function slideGroup(g){
+ var h='<div class="rp-title">'+(LANG==="es"?"GRUPO ":"GROUP ")+esc(g.grupo||"")+'</div><div class="rp-tbl">';
+ (g.tabla||[]).forEach(function(row){
+  var c=chainByShort(row.short), q=row.pos<=2;
+  h+='<div class="rp-trow'+(q?' q':'')+'"><span class="rp-pos">'+row.pos+'</span>'+(c?flagHTML(c,15):'')
+    +'<span class="rp-nm">'+esc(row.short)+'</span><span class="rp-dg">'+(row.dg>0?'+':'')+row.dg+'</span>'
+    +'<span class="rp-pts">'+row.pts+'</span></div>';
+ });
+ h+='</div><div class="rp-foot">'+(LANG==="es"?"▲ clasifican los 2 primeros":"▲ top 2 advance")+'</div>';
+ return h;
+}
+function slideRound(r){
+ var ms=r.matches||[], done=[], live=null;
+ ms.forEach(function(mt){ if(mt.st==="done"&&mt.win) done.push(mt.win); else if(mt.st==="live") live=mt; });
+ var h='<div class="rp-title">'+esc((r.name||"").toUpperCase())+'</div>'
+   +'<div class="rp-sub">'+done.length+'/'+ms.length+' '+(LANG==="es"?"definidos":"decided")+'</div><div class="rp-winners">';
+ done.forEach(function(sh){ var c=chainByShort(sh); h+='<span class="rp-win">'+(c?flagHTML(c,14):'')+esc(sh)+'</span>'; });
+ h+='</div>';
+ if(live) h+='<div class="rp-live">▶ '+esc(live.a)+' '+live.ga+'-'+live.gb+' '+esc(live.b)+'</div>';
+ return h;
+}
+function slideChamp(){
+ var b=S.srvBracket||{}, champ=b.campeon?chainByShort(b.campeon):null, third=b.tercero?chainByShort(b.tercero):null;
+ var h='<div class="rp-title">🏆 '+(LANG==="es"?"CAMPEÓN":"CHAMPION")+'</div>';
+ if(champ) h+='<div class="rp-champ">'+flagHTML(champ,28)+'<b>'+esc(champ.name)+'</b></div>';
+ if(third) h+='<div class="rp-third">🥉 '+(LANG==="es"?"3er puesto: ":"3rd place: ")+esc(third.short)+'</div>';
+ return h;
+}
+function renderRotPanel(){
+ var el=$("#rotpanel"); if(!el) return;
+ var slides=rotSlides(); if(!slides.length){ el.innerHTML=''; return; }
+ if(rotIdx>=slides.length) rotIdx=rotIdx%slides.length;
+ var sl=slides[rotIdx];
+ var tag=sl.kind==="now"?"AHORA":sl.kind==="group"?(LANG==="es"?"GRUPOS":"GROUPS"):sl.kind==="champ"?"FINAL":(LANG==="es"?"CUADRO":"BRACKET");
+ var body=sl.kind==="now"?slideNow():sl.kind==="group"?slideGroup(sl.g):sl.kind==="round"?slideRound(sl.r):slideChamp();
+ var dots=''; for(var i=0;i<slides.length;i++) dots+='<span class="rp-dot'+(i===rotIdx?' on':'')+'"></span>';
+ el.innerHTML='<div class="rp-h"><span class="rp-tag">'+tag+'</span><span class="rp-live-dot"></span></div>'
+   +'<div class="rp-body">'+body+'</div><div class="rp-dots">'+dots+'</div>';
+}
+function rotAdvance(){ var n=rotSlides().length; if(n>0){ rotIdx=(rotIdx+1)%n; renderRotPanel(); } }
+function startRot(){ if(rotTimer) return; rotTimer=setInterval(rotAdvance,5000); }
+function applyGroups(g){ S.srvGroups=g.grupos||[]; S.srvFase=g.fase; try{ renderRotPanel(); }catch(e){} }
+/* ====================================================== RENDER: SCREEN (solo live) */
 let ANIM=true;
-function renderScreen(animate){
- ANIM = animate!==false;
- const s=S.section;
- if(s==="live") renderLive();
- else if(s==="grupos") renderGroups();
- else if(s==="tabla") renderTabla();
- else if(s==="fixture") renderFixture();
- else if(s==="feed") renderFeed();
- else if(s==="info") renderInfo();
- else if(s==="chat") renderChat();
-}
+function renderScreen(animate){ ANIM=animate!==false; renderLive(); }
 function meterHTML(pct,color){
  const segs=12,lit=Math.round(pct/100*segs);let h='<span class="meter" style="--mc:'+color+'">';
  for(let i=0;i<segs;i++) h+='<i class="'+(i<lit?'on':'')+'"></i>';
@@ -747,7 +810,8 @@ function playsHTML(m){
 }
 function renderHud(){
  const m=S.match; const el=$("#hudbar"); if(!el) return;
- let h='<div class="hud-teams">';
+ let h='<div class="hud-phase" id="lvPhase">'+esc(phaseLine())+'</div>';
+ h+='<div class="hud-teams">';
  h+='<div class="hud-team" id="lvHome">'+flagHTML(m.home,28)+'<span class="nm">'+m.home.name.toUpperCase()+'</span></div>';
  h+='<div class="hud-team" id="lvAway">'+flagHTML(m.away,28)+'<span class="nm">'+m.away.name.toUpperCase()+'</span></div>';
  h+='</div>';
@@ -765,119 +829,15 @@ function renderLive(){
 }
 function updateLive(){
  const sc=$("#lvSc"); if(!sc) return; const m=S.match;
+ var _ph=$("#lvPhase"); if(_ph) _ph.textContent=phaseLine();
  if(updateLive._h!==m.home.short){ $("#lvHome").innerHTML=flagHTML(m.home,28)+'<span class="nm">'+m.home.name.toUpperCase()+'</span>'; updateLive._h=m.home.short; }
  if(updateLive._a!==m.away.short){ $("#lvAway").innerHTML=flagHTML(m.away,28)+'<span class="nm">'+m.away.name.toUpperCase()+'</span>'; updateLive._a=m.away.short; }
  sc.textContent=m.sh+' : '+m.sa;
  $("#lvMin").textContent=m.min+"'";
  $("#lvMeters").innerHTML=meterRowHTML(m);
 }
-function renderTabla(){
- const {board,pIdx,cur,elim}=derive();
- const top=board.slice(0,8),maxP=Math.max.apply(null,top.map(c=>c.pts).concat(1));
- const dead=elim>0?board.slice(-Math.min(elim,6)):[];
- let h='';
- h+='<div class="panel"><div class="panel-h"><span class="h">'+i18n('progress')+'</span><span class="s">'+i18n('progressSub')+'</span></div><div class="pbody"><div class="steps">';
- PHASES.forEach((p,i)=>{ h+='<div class="step'+(i===pIdx?' on':i<pIdx?' done':'')+'"><span class="d">'+(i<pIdx?'✓':i+1)+'</span><span class="n">'+p.n[LANG]+'</span></div>'; });
- h+='</div></div></div>';
- h+='<div class="panel"><div class="panel-h"><span class="h">'+i18n('tableTitle')+'</span><span class="s">'+i18n('tableSub')+'</span></div><div class="pbody">';
- top.forEach((c,i)=>{ h+='<div class="brow"><span class="pos">'+(i+1)+'</span>'+flagHTML(c,26)+'<span class="cn">'+c.name+'</span><span class="pb"><i style="width:'+(c.pts/maxP*100)+'%;background:'+c.color+'"></i></span><span class="pt">'+c.pts+'</span></div>'; });
- if(elim===0){ h+='<div class="alive">'+i18n('aliveLine')+'</div>'; }
- else{ h+='<div class="rugged"><div class="rh">☠ '+elim+' CHAINS RUGGED</div><div class="rr">';
-  dead.forEach(c=>{ h+='<span class="dead">'+flagHTML(c,26)+'</span>'; });
-  if(elim>dead.length) h+='<span class="dead-more">+'+(elim-dead.length)+'</span>'; h+='</div></div>'; }
- h+='</div></div>';
- setScreen(h);
-}
-/* ===================== FASE DE GRUPOS (12 grupos de 4) */
-function computeGroups(){
- const groups=[];
- for(let g=0;g<12;g++){
-  const letter=String.fromCharCode(65+g);
-  const rows=[g*4,g*4+1,g*4+2,g*4+3].map(i=>{ const c=chain(i); return {c,vol:S.vol[c.short]||0,pts:S.points[c.short]||0}; });
-  rows.sort((a,b)=>(b.vol-a.vol)||(b.pts-a.pts));
-  rows.forEach((r,i)=>r.pos=i+1);
-  groups.push({letter,rows});
- }
- const thirds=groups.map(g=>({c:g.rows[2].c,vol:g.rows[2].vol,pts:g.rows[2].pts,letter:g.letter})).sort((a,b)=>(b.vol-a.vol)||(b.pts-a.pts));
- const qSet=new Set(thirds.slice(0,8).map(t=>t.c.short));
- thirds.forEach((t,i)=>t.qual=i<8);
- groups.forEach(g=>g.rows.forEach(r=>{ r.q = r.pos<=2?"d":(r.pos===3&&qSet.has(r.c.short)?"3":""); }));
- return {groups,thirds};
-}
-function renderGroups(){
- const {groups,thirds}=computeGroups();
- let h='<div class="panel"><div class="panel-h"><span class="h">'+i18n('groupStage')+'</span><span class="s">'+i18n('groupStageSub')+'</span></div><div class="pbody"><div class="groups">';
- groups.forEach(g=>{
-  h+='<div class="grp"><div class="grp-h">'+i18n('group')+' '+g.letter+'</div>';
-  g.rows.forEach(r=>{ h+='<div class="grow '+(r.q==="d"?"q":r.q==="3"?"q3":"")+'"><span class="gp">'+r.pos+'</span>'+flagHTML(r.c,17)+'<span class="gn">'+r.c.short+'</span><span class="gv">'+r.vol.toFixed(1)+'</span></div>'; });
-  h+='</div>';
- });
- h+='</div></div></div>';
- h+='<div class="panel" style="margin-top:10px"><div class="panel-h"><span class="h">'+i18n('bestThirds')+'</span><span class="s">'+i18n('bestThirdsSub')+'</span></div><div class="pbody"><div class="thirds">';
- thirds.forEach((t,i)=>{ h+='<div class="grow '+(t.qual?"q3":"out")+'"><span class="gp">'+(i+1)+'</span>'+flagHTML(t.c,17)+'<span class="gn">'+t.c.short+' <small style="color:var(--mut)">·'+t.letter+'</small></span><span class="gv">'+t.vol.toFixed(1)+'◎</span><span class="qtag'+(t.qual?"":" out")+'">'+(t.qual?i18n('qualifies'):i18n('eliminated'))+'</span></div>'; });
- h+='</div></div></div>';
- setScreen(h);
-}
-/* ===================== LLAVES / BRACKET (32 → campeón, gana el de más hinchada) */
-function seedOrder(n){ let pls=[1,2]; while(pls.length<n){ const s=pls.length*2+1,out=[]; for(const p of pls){ out.push(p,s-p);} pls=out; } return pls; }
-function computeBracket(){
- const {groups,thirds}=computeGroups();
- const pool=[]; groups.forEach(g=>{ pool.push({c:g.rows[0].c,vol:g.rows[0].vol}); pool.push({c:g.rows[1].c,vol:g.rows[1].vol}); });
- thirds.slice(0,8).forEach(t=>pool.push({c:t.c,vol:t.vol}));
- pool.sort((a,b)=>b.vol-a.vol);
- const ord=seedOrder(32), teams=ord.map(s=>pool[s-1]);
- const pIdx=phaseFor(S.sold);
- const roundPhase=[1,2,3,4,5], names=ROUND_NAMES[LANG]||ROUND_NAMES.en;
- const rounds=[]; let cur=teams.slice();
- for(let r=0;r<5;r++){
-  const matches=[],next=[];
-  for(let i=0;i<cur.length;i+=2){ const a=cur[i],b=cur[i+1], dec=pIdx>roundPhase[r]; let w=null; if(a&&b&&a.c&&b.c) w=(a.vol>=b.vol)?a:b; matches.push({a,b,dec,w}); next.push(dec?w:null); }
-  rounds.push({name:names[r],matches,reached:pIdx>=roundPhase[r],active:pIdx===roundPhase[r]});
-  cur=next;
- }
- const champ=(pIdx>=6&&rounds[4].matches[0])?rounds[4].matches[0].w:null;
- return {rounds,champ,pIdx};
-}
-function renderFixture(){
- var bk=S.srvBracket;
- var h='<div class="panel"><div class="panel-h"><span class="h">'+i18n('bracketTitle')+'</span><span class="s">'+i18n('bracketSub')+'</span></div><div class="pbody"><div class="bracket">';
- if(!bk||!bk.rounds){ h+='<div class="hint">'+(LANG==="es"?"esperando datos del torneo...":"waiting for tournament data...")+'</div></div></div></div>'; setScreen(h); return; }
- if(bk.campeon){ var cc=chainByShort(bk.campeon); if(cc){ h+='<div class="champ">'+i18n('champ')+'<br>'+flagHTML(cc,34)+' <b>'+cc.name+'</b></div>'; } }
- var RNAMES={48:{es:"Ronda preliminar",en:"Preliminary round"},32:{es:"16avos de final",en:"Round of 32"},16:{es:"Octavos de final",en:"Round of 16"},8:{es:"Cuartos de final",en:"Quarterfinals"},4:{es:"Semifinal",en:"Semifinals"},2:{es:"Final",en:"Final"}};
- bk.rounds.forEach(function(rnd){
-  var isCur=false,k; for(k=0;k<rnd.matches.length;k++){ if(rnd.matches[k].st==="live"||rnd.matches[k].st==="next"){ isCur=true; break; } }
-  var rn=(RNAMES[rnd.size]&&RNAMES[rnd.size][LANG])||rnd.name||"";
-  h+='<div class="brnd'+(isCur?' act':'')+'"><div class="brnd-h">'+rn.toUpperCase()+(isCur?i18n('inPlay'):'')+'</div>';
-  rnd.matches.forEach(function(mt){
-   var live=(mt.st==="live"), done=(mt.st==="done");
-   var ca,cb,sga,sgb,na,nb,aw=false,bw=false;
-   if(live && S.match && S.match.home){ ca=S.match.home; cb=S.match.away; sga=S.match.sh; sgb=S.match.sa; }
-   else { ca=chainByShort(mt.a); cb=chainByShort(mt.b); sga=mt.ga; sgb=mt.gb; aw=done&&mt.win===mt.a; bw=done&&mt.win===mt.b; }
-   na=ca?ca.short:mt.a; nb=cb?cb.short:mt.b;
-   var fa=ca?flagHTML(ca,18):"", fb=cb?flagHTML(cb,18):"";
-   var score=done?(sga+"-"+sgb):(live?(sga+"-"+sgb):"vs");
-   h+='<div class="bmatch'+(live?' act':'')+'"><span class="bteam'+(done?(aw?" win":" lose"):"")+'">'+fa+' '+na+'</span><span class="bvs">'+score+'</span><span class="bteam r'+(done?(bw?" win":" lose"):"")+'">'+nb+' '+fb+'</span></div>';
-  });
-  h+='</div>';
- });
- h+='</div></div></div>';
- setScreen(h);
-}
-function renderFeed(){
- let h='<div class="panel"><div class="panel-h"><span class="h">'+i18n('feedTitle')+'</span><span class="s">'+i18n('feedSub')+'</span></div><div class="pbody">';
- h+='<div class="feed-stats"><div>'+i18n('buysLbl')+' <b>'+S.buys+'</b></div><div>'+i18n('feesLbl')+' <b>'+S.fees+'◎</b></div><div>'+i18n('hype')+' <b>'+S.sold.toFixed(1)+'◎</b></div></div>';
- h+='<div class="feed">';
- if(S.feed.length===0) h+='<div class="hint">'+i18n('feedEmpty')+'</div>';
- S.feed.slice(0,16).forEach(f=>{ h+='<div class="fi" style="--c:'+f.ev.color+'"><span class="fe">'+f.ev.emoji+'</span><span class="ft">'+(f.ev.label?f.ev.label[LANG]:f.ev.type)+'</span>'+flagHTML({name:f.team,short:f.team.slice(0,3),color:f.color,logo:f.logo},18)+'<span class="fn">'+f.team+'</span><span class="fsol">+'+f.sol+'◎</span></div>'; });
- h+='</div></div></div>';
- setScreen(h);
-}
-function renderInfo(){
- let h='<div class="panel"><div class="panel-h"><span class="h">'+i18n('infoTitle')+'</span><span class="s">'+i18n('infoSub')+'</span></div><div class="pbody info">';
- h+=INFO_HTML[LANG]||INFO_HTML.en;
- h+='</div></div>';
- setScreen(h);
-}
+/* secciones GRUPOS/TABLA/LLAVES/FEED/INFO retiradas: la data del torneo ahora se muestra
+   en el panel auto-rotativo (renderRotPanel) con la data real del server. */
 function setScreen(html){ const el=$("#screen"); el.innerHTML=html; el.classList.remove("anim"); if(ANIM){ void el.offsetWidth; el.classList.add("anim"); } el.scrollTop=0; ANIM=true; }
 function rebind(){ /* placeholder por si hace falta re-enganchar */ }
 function applyLang(){
@@ -888,35 +848,15 @@ function applyLang(){
  try{ setFeedState(feedState); }catch(e){}
  try{ var ba=$("#btnAuto"); if(ba) ba.textContent=S.auto?i18n('btnStop'):i18n('btnAuto'); }catch(e){}
  try{ S.headlines=Array.from({length:8},makeHeadline); }catch(e){}
- try{ if(S.started){ renderMenu(); renderHud(); renderScreen(false); } renderTopbar(); }catch(e){}
+ try{ if(S.started){ renderHud(); renderRotPanel(); renderScreen(false); } renderTopbar(); }catch(e){}
 }
 
-/* ====================================================== CHAT del público */
+/* ====================================================== TICKER / panel público (eventos del torneo) */
 const CHAT_COLORS=["#ffb02e","#36e0d0","#3ddc84","#ff3d7f","#ffd27a","#b06bff","#4da2ff","#ff8a3d"];
-/* almacén de comentarios reales (dedup por id) */
-const cById=new Map();
-function trimChat(){ while(S.chat.length>220){ const rm=S.chat.shift(); if(rm&&rm.id!=null) cById.delete(rm.id); } }
-function normComment(r){ return {id:r.id, u:r.nick||"anon", m:r.body||"", c:colorFor(r.nick||"anon"), likes:r.likes||0, parent_id:(r.parent_id!=null?r.parent_id:null), deleted:!!r.deleted, liked:likedIds.has(r.id), mine:ownedIds.has(r.id)}; }
-function upsertComment(r,opts){
- opts=opts||{};
- const ex=cById.get(r.id);
- if(ex){ ex.u=r.nick||ex.u; ex.c=colorFor(ex.u); ex.m=r.body||""; if(r.likes!=null) ex.likes=r.likes; ex.deleted=!!r.deleted; ex.mine=ex.mine||ownedIds.has(r.id); ex.liked=likedIds.has(r.id); }
- else { const c=normComment(r); cById.set(c.id,c); S.chat.push(c); trimChat(); if(opts.ticker) tickerPush(c); }
- if(!opts.silent){ if(S.section==="chat") renderChatBox(); renderSideChat(); }
-}
-function commentLineHTML(c){
- if(c.sys) return '<div class="cmsg"><span class="cu" style="color:'+c.c+'">'+esc(c.u)+'</span><span class="ct">'+esc(c.m)+'</span></div>';
- const body=c.deleted?'<i style="color:var(--mut)">'+(LANG==="es"?"— borrado —":"— deleted —")+'</i>':esc(c.m);
- let h='<div class="cmsg cmt" data-id="'+c.id+'"><span class="cu" style="color:'+c.c+'">'+esc(c.u)+'</span><span class="ct">'+body+'</span>';
- if(!c.deleted) h+='<button class="clike'+(c.liked?' on':'')+'" data-act="like" data-id="'+c.id+'" title="like">♥ '+(c.likes||0)+'</button>';
- if(c.mine&&!c.deleted) h+='<button class="cdel" data-act="del" data-id="'+c.id+'" title="'+(LANG==="es"?"borrar":"delete")+'">✕</button>';
- return h+'</div>';
-}
-/* mensajes de sistema del torneo (sin id, no comentables) */
+/* empuja un evento real del torneo (gol, cambio de ronda...) al panel lateral y al ticker de abajo */
 function pushChat(user,msg,color){
- const c={u:user,m:msg,c:color||colorFor(user),sys:true};
- S.chat.push(c); trimChat();
- if(S.section==="chat") renderChatBox();
+ const c={u:user,m:msg,c:color||colorFor(user)};
+ S.chat.push(c); if(S.chat.length>120) S.chat.shift();
  renderSideChat(); tickerPush(c);
 }
 let tickX=0, tickStarted=false;
@@ -935,87 +875,7 @@ function pushBuy(sol, team){
 }
 function colorFor(name){ let h=0,s=String(name||""); for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0; return CHAT_COLORS[h%CHAT_COLORS.length]; }
 function renderSideChat(){ const box=$("#aboutChat"); if(!box) return; box.innerHTML=S.chat.slice(-9).map(c=>'<div class="cmsg"><span class="cu" style="color:'+c.c+'">'+esc(c.u)+'</span><span class="ct">'+esc(c.m)+'</span></div>').join(""); }
-function chatFor(){ /* reacciones fake retiradas: ahora el chat son comentarios reales */ }
-function renderChatBox(){
- const box=$("#chatbox"); if(!box) return;
- box.innerHTML=S.chat.slice(-80).map(commentLineHTML).join("");
- box.scrollTop=box.scrollHeight;
-}
-function startCooldownUI(){ const tick=()=>{ const sb=$("#csend"); if(!sb) return; const l=cooldownLeft(); const cc=$("#ccool"); if(l<=0){ sb.disabled=false; sb.classList.remove("cool"); sb.textContent="ENVIAR"; if(cc) cc.textContent=""; return; } sb.disabled=true; sb.classList.add("cool"); sb.textContent=l+"s"; if(cc) cc.textContent="⏳ esperá "+l+"s para volver a comentar"; setTimeout(tick,400); }; tick(); }
-function renderChat(){
- const estado='<span class="s" style="color:var(--green)">● '+(LANG==="es"?"en vivo · comentarios reales":"live · real comments")+'</span>';
- let h='<div class="panel chat-panel"><div class="panel-h"><span class="h">COMENTARIOS</span>'+estado+'</div><div class="pbody">';
- h+='<div class="nickrow"><span class="nl">NICK</span><input id="cnick" maxlength="24" value="'+esc(userNick)+'" placeholder="tu nick"></div>';
- h+='<div class="chatbox" id="chatbox"></div>';
- h+='<div class="cinput"><input id="cin" maxlength="280" placeholder="dejá tu comentario…"><button id="csend">ENVIAR</button></div>';
- h+='<div class="ccool" id="ccool"></div>';
- h+='</div></div>';
- setScreen(h);
- renderChatBox();
- const box=$("#chatbox");
- if(box) box.onclick=(e)=>{ const b=e.target&&e.target.closest&&e.target.closest('button[data-act]'); if(!b) return; const id=+b.getAttribute('data-id'), act=b.getAttribute('data-act'); if(act==="like") toggleLike(id); else if(act==="del") deleteComment(id); };
- const send=()=>{ const inp=$("#cin"); if(!inp) return; const v=inp.value.trim(); if(!v) return;
-   if(cooldownLeft()>0){ startCooldownUI(); return; }
-   const nk=$("#cnick"); if(nk && nk.value.trim()){ userNick=nk.value.trim().slice(0,24); saveNick(userNick); }
-   inp.value=""; blip("sel");
-   postComment(v); };
- const sb=$("#csend"), ci=$("#cin");
- if(sb) sb.onclick=send;
- if(ci) ci.onkeydown=(e)=>{ if(e.key==="Enter") send(); };
- startCooldownUI();
-}
-/* ====== API de comentarios (REST hacia BACKEND_HTTP + reacción a eventos WS) ====== */
-function commentError(msg){ const cc=$("#ccool"); if(cc) cc.textContent="⚠ "+msg; }
-function loadComments(){
- fetch(BACKEND_HTTP+"/api/comments?limit=200").then(r=>r.ok?r.json():Promise.reject(r.status)).then(list=>{
-   if(!Array.isArray(list)) return;
-   list.slice().reverse().forEach(r=>upsertComment(r,{silent:true}));  // backend manda id DESC -> mostramos ASC
-   if(S.section==="chat") renderChatBox();
-   renderSideChat();
- }).catch(()=>{});
-}
-function postComment(body){
- fetch(BACKEND_HTTP+"/api/comments",{method:"POST",headers:{"Content-Type":"application/json"},
-   body:JSON.stringify({nick:userNick,body:body,parent_id:null,token:RWC_TOKEN})})
- .then(async r=>{
-   if(r.status===429){ let j={}; try{ j=await r.json(); }catch(e){} const sec=(j.retry||(COOLDOWN/1000)); lastCommentAt=Date.now()-(COOLDOWN-sec*1000); startCooldownUI(); return null; }
-   if(!r.ok){ let j={}; try{ j=await r.json(); }catch(e){} commentError((j&&j.error)||("error "+r.status)); return null; }
-   return r.json();
- }).then(cmt=>{
-   if(!cmt||cmt.id==null) return;
-   ownedIds.add(cmt.id); saveIdSet("rwc_owned",ownedIds);
-   upsertComment(cmt,{ticker:true});          // también llegará por WS: dedup por id
-   lastCommentAt=Date.now(); startCooldownUI();
- }).catch(()=>{ commentError(LANG==="es"?"sin conexión":"no connection"); });
-}
-function toggleLike(id){
- const c=cById.get(id); if(!c||c.deleted) return;
- const want=!likedIds.has(id);
- if(want){ likedIds.add(id); c.liked=true; c.likes=(c.likes||0)+1; }
- else { likedIds.delete(id); c.liked=false; c.likes=Math.max(0,(c.likes||0)-1); }
- saveIdSet("rwc_liked",likedIds);
- if(S.section==="chat") renderChatBox();
- const url=BACKEND_HTTP+"/api/comments/"+id+"/like";
- const req=want?fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:RWC_TOKEN})})
-              :fetch(url+"?token="+encodeURIComponent(RWC_TOKEN),{method:"DELETE"});
- req.catch(()=>{});   // el conteo autoritativo llega por WS comment_like
-}
-function deleteComment(id){
- const c=cById.get(id); if(!c||!c.mine) return;
- fetch(BACKEND_HTTP+"/api/comments/"+id+"?token="+encodeURIComponent(RWC_TOKEN),{method:"DELETE"}).catch(()=>{});
- // el WS comment_del lo marcará borrado para todos
-}
-function applyCommentWS(s){
- if(s.type==="comment_new"){ upsertComment(s.comment,{ticker:true}); }
- else if(s.type==="comment_edit"){ if(s.comment) upsertComment(s.comment); }
- else if(s.type==="comment_del"){ const c=cById.get(s.id); if(c){ c.deleted=true; c.m=""; if(S.section==="chat") renderChatBox(); renderSideChat(); } }
- else if(s.type==="comment_like"){ const c=cById.get(s.id); if(c){ c.likes=s.likes; if(S.section==="chat") renderChatBox(); } }
-}
-function chatLiveBody(){
- const last=S.chat.slice(-4);
- if(!last.length) return '<div class="clh">📺 PÚBLICO</div>';
- return '<div class="clh">📺 PÚBLICO</div>'+last.map(c=>'<div class="cmsg"><span class="cu" style="color:'+c.c+'">'+esc(c.u)+'</span><span class="ct">'+(c.deleted?"—":esc(c.m))+'</span></div>').join("");
-}
+function chatFor(){ /* sin chat fake: la página en vivo se alimenta de eventos reales del torneo */ }
 
 /* ====================================================== ACCIÓN: COMPRA */
 /* ============================================================
@@ -1256,12 +1116,12 @@ setInterval(()=>{
  renderTopbar();
  if(!S.started) return;
  updateLive();                          // en el lugar, sin re-animar
- if(ended && (S.section==="tabla"||S.section==="fixture"||S.section==="grupos")) renderScreen(false); // solo cambia al cerrar partido
+ if(ended) renderScreen(false); // cierre de partido (solo modo local no-viewer)
 },1100);
 /* ====== VIEWER: conexion al backend (estado autoritativo) ====== */
 var SHORT2I={}; CHAINS.forEach(function(c,i){ SHORT2I[c[1]]=i; });
 function chainByShort(sh){ var i=SHORT2I[sh]; return (i==null)?null:chain(i); }
-function applyBracket(b){ S.srvBracket=b; if(S.section==="fixture"){ try{ renderScreen(false); }catch(e){} } }
+function applyBracket(b){ S.srvBracket=b; try{ renderRotPanel(); }catch(e){} }
 var BACKEND_WS="wss://rug-world-cup-backend.onrender.com/ws";
 var srvWS=null, srvTries=0;
 var rwcPause=(function(){ try{ var d=document.createElement("div"); d.id="rwcPause"; d.style.cssText="position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:60;background:rgba(7,11,18,.82);color:#ffb02e;font-family:monospace;font-size:14px;letter-spacing:1px;padding:5px 12px;border:1px solid rgba(255,176,46,.5);border-radius:4px;display:none;pointer-events:none"; d.textContent="esperando compras..."; (document.getElementById("wrap")||document.body).appendChild(d); return d; }catch(e){ return null; } })();
@@ -1271,30 +1131,31 @@ function applyState(s){
  var m=S.match;
  var prevKey=(m.home&&m.away)?m.home.short+m.away.short:"";
  var newKey=s.local.short+s.visita.short;
- var _gh=(newKey===prevKey)&&s.local.goles>m.sh, _ga=(newKey===prevKey)&&s.visita.goles>m.sa; if(_gh||_ga){ S.goalAt=Date.now(); try{ if(window.SC) SC.onGoal(_gh?"home":"away"); }catch(e){} }
+ var _gh=(newKey===prevKey)&&s.local.goles>m.sh, _ga=(newKey===prevKey)&&s.visita.goles>m.sa; if(_gh||_ga){ S.goalAt=Date.now(); try{ if(window.SC) SC.onGoal(_gh?"home":"away"); }catch(e){} try{ var _sc=_gh?s.local:s.visita; pushChat(i18n('tournament'),"⚽ "+_sc.name+"  "+s.local.short+" "+s.local.goles+"-"+s.visita.goles+" "+s.visita.short, _sc.color); }catch(e){} }
  m.home=chain(ai); m.away=chain(bi); m.ai=ai; m.bi=bi;
  m.sh=s.local.goles; m.sa=s.visita.goles; m.min=s.minuto;
  m.atkH=s.local.atk||0; m.atkA=s.visita.atk||0;
- S.srv={ronda:s.ronda,ronda_size:s.ronda_size,partido:s.partido,partidos_ronda:s.partidos_ronda,campeon:s.campeon};
+ S.srv={fase:s.fase,ronda:s.ronda,ronda_size:s.ronda_size,fecha:s.fecha,grupo:s.grupo,partido:s.partido,partidos_ronda:s.partidos_ronda,activo:s.activo,campeon:s.campeon,tercero:s.tercero};
+ if(S._lastRonda && S._lastRonda!==s.ronda && !s.campeon){ try{ pushChat(i18n('tournament'),"🔓 "+(s.ronda||"").toUpperCase(), "#ffb02e"); }catch(e){} }
+ S._lastRonda=s.ronda;
  window.RWC_VE=(s.energia||0)/100; window.RWC_VA=!!s.activo;
  if(rwcPause){ rwcPause.style.display=s.activo?"none":"block"; if(!s.activo) rwcPause.textContent=(LANG==="es"?"esperando compras...":"waiting for buys..."); }
  if(s.activo && window.SC){ var _nb=Math.min(5,s.buys||0); for(var _i=0;_i<_nb;_i++){ var _side=(Math.random()<0.5)?"home":"away"; var _sol=(_i===0&&s.sol_max)?s.sol_max:(0.2+Math.random()*Math.random()*1.6); try{ SC.onBuy(_side,_sol); }catch(e){} } }
  if(s.campeon){ if(S._lastChamp!==s.campeon){ S._lastChamp=s.campeon; var ci=SHORT2I[s.campeon]; if(ci!=null){ try{ championFX(chain(ci)); }catch(e){} } } } else { S._lastChamp=null; }
  try{ renderTopbar(); }catch(e){}
- if(S.section==="fixture"){ try{ renderScreen(false); }catch(e){} } else if(newKey!==prevKey){ try{ if(S.section!=="live") renderScreen(false); }catch(e){} }
+ try{ updateLive(); }catch(e){}
+ try{ renderRotPanel(); }catch(e){}
 }
 function connectBackend(){
  if(typeof WebSocket==="undefined") return;
  try{ srvWS=new WebSocket(BACKEND_WS); }catch(e){ srvTries++; setTimeout(connectBackend, Math.min(8000,1000*srvTries)); return; }
  srvWS.onopen=function(){ srvTries=0; try{ setFeedState("live"); }catch(e){} };
- srvWS.onmessage=function(ev){ var s; try{ s=JSON.parse(ev.data); }catch(e){ return; } if(!s||!s.type) return; if(s.type==="state") applyState(s); else if(s.type==="bracket") applyBracket(s); else if(s.type.indexOf("comment_")===0) applyCommentWS(s); };
+ srvWS.onmessage=function(ev){ var s; try{ s=JSON.parse(ev.data); }catch(e){ return; } if(!s||!s.type) return; if(s.type==="state") applyState(s); else if(s.type==="bracket") applyBracket(s); else if(s.type==="groups") applyGroups(s); };
  srvWS.onclose=function(){ try{ setFeedState("reconnecting"); }catch(e){} srvTries++; setTimeout(connectBackend, Math.min(8000,1000*srvTries)); };
  srvWS.onerror=function(){ try{ srvWS.close(); }catch(e){} };
 }
 connectBackend();
 setInterval(()=>{ S.headlines.unshift(makeHeadline()); if(S.headlines.length>12)S.headlines.length=12; renderTopbar(); },6500);
-/* comentarios reales: carga inicial desde el backend (los nuevos llegan por WS) */
-loadComments();
 
 /* ====================================================== AUDIO */
 let actx=null;
@@ -1313,11 +1174,13 @@ function sfx(name){
 }
 
 /* ====================================================== NAV / BOOT */
-function selectSection(id){ if(S.section===id && S.started){ return; } S.section=id; renderMenu(); renderScreen(); blip("sel"); }
+/* navegación por secciones retirada: la página es solo LIVE */
 function startGame(){
  if(S.started) return; S.started=true; ensureAudio();
  $("#title").style.display="none"; $("#shell").classList.add("on"); $("#action").classList.add("on"); $("#about").classList.add("on"); $("#ticker").classList.add("on");
- renderMenu(); renderHud(); renderScreen(); renderTopbar(); renderSideChat(); startTicker(); blip("confirm");
+ renderHud(); renderRotPanel(); renderScreen(); renderTopbar(); startTicker(); startRot();
+ var rp=$("#rotpanel"); if(rp) rp.onclick=function(){ rotAdvance(); if(rotTimer){ clearInterval(rotTimer); rotTimer=null; startRot(); } };
+ blip("confirm");
 }
 $("#title").addEventListener("click",startGame);
 $("#btnBuy").addEventListener("click",()=>{ ensureAudio(); ingestPurchase(+(Math.random()*Math.random()*4+0.05).toFixed(2)); });
@@ -1331,10 +1194,7 @@ $("#tbLang").addEventListener("click",()=>{ LANG=(LANG==="en")?"es":"en"; applyL
 window.addEventListener("keydown",e=>{
  if(e.target && (e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")) return;
  if(!S.started){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); startGame(); } return; }
- const idx=SECTIONS.findIndex(s=>s[0]===S.section);
- if(e.key==="ArrowDown"){ e.preventDefault(); selectSection(SECTIONS[(idx+1)%SECTIONS.length][0]); }
- else if(e.key==="ArrowUp"){ e.preventDefault(); selectSection(SECTIONS[(idx-1+SECTIONS.length)%SECTIONS.length][0]); }
- else if(e.key>="1"&&e.key<=String(SECTIONS.length)){ const n=+e.key-1; if(SECTIONS[n]) selectSection(SECTIONS[n][0]); }
+ if(e.key==="ArrowRight"||e.key==="ArrowDown"||e.key==="ArrowLeft"||e.key==="ArrowUp"){ e.preventDefault(); rotAdvance(); }
  else if(e.key.toLowerCase()==="b"){ ingestPurchase(+(Math.random()*Math.random()*4+0.05).toFixed(2)); }
 });
 
@@ -1352,14 +1212,14 @@ function drawFlag3D(ctx,x,y,w,h,c,F){
 function drawMeterB(ctx,x,y,w,h,pct,color){ const segs=12,gap=w*0.012,sw=(w-gap*(segs-1))/segs,lit=Math.round(pct/100*segs);
  for(let i=0;i<segs;i++){ ctx.fillStyle=i<lit?color:"rgba(255,255,255,0.08)"; ctx.fillRect(x+i*(sw+gap),y,sw,h); } }
 function drawBoard(ctx,W,H,fontReady){
- const m=S.match,{cur}=derive(),F=fontReady?"'Press Start 2P'":"monospace",goalFlash=Date.now()-S.goalAt<1600;
+ const m=S.match,F=fontReady?"'Press Start 2P'":"monospace",goalFlash=Date.now()-S.goalAt<1600;
  ctx.fillStyle="#070c14"; ctx.fillRect(0,0,W,H);
  const g=ctx.createRadialGradient(W/2,H/2,H*0.2,W/2,H/2,H*0.9); g.addColorStop(0,"rgba(40,80,120,0.18)"); g.addColorStop(1,"rgba(0,0,0,0.55)");
  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
  ctx.fillStyle="rgba(0,0,0,0.2)"; for(let yy=0;yy<H;yy+=4) ctx.fillRect(0,yy,W,2);
  ctx.textAlign="center"; ctx.textBaseline="middle";
  ctx.fillStyle="#ffb02e"; ctx.font=Math.round(H*0.07)+"px "+F; ctx.fillText("RUG WORLD CUP 26",W/2,H*0.11);
- ctx.fillStyle="#36e0d0"; ctx.font=Math.round(H*0.045)+"px "+F; ctx.fillText(cur.n[LANG].toUpperCase(),W/2,H*0.2);
+ ctx.fillStyle="#36e0d0"; ctx.font=Math.round(H*0.045)+"px "+F; ctx.fillText(((S.srv&&S.srv.ronda)||(LANG==="es"?"Mundial":"World Cup")).toUpperCase(),W/2,H*0.2);
  const fw=W*0.2,fh=H*0.3,fy=H*0.28;
  drawFlag3D(ctx,W*0.06,fy,fw,fh,m.home,F); drawFlag3D(ctx,W*0.74,fy,fw,fh,m.away,F);
  ctx.fillStyle=goalFlash?"#3ddc84":"#ffe9b0"; ctx.font=Math.round(H*0.2)+"px "+F; ctx.fillText(m.sh+":"+m.sa,W/2,H*0.4);
