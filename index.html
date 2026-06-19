@@ -306,6 +306,10 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
 .ab-state{ font-family:'Press Start 2P'; font-size:7px; color:var(--mut); }
 .ab-state.live{ color:var(--green); }
 .ab-sub{ font-size:13px; line-height:1.25; color:var(--mut); margin:-2px 0 9px; }
+.ab-buys{ display:flex; flex-direction:column; gap:3px; max-height:200px; overflow:hidden; }
+.buyline{ font-family:'VT323',monospace; font-size:18px; color:var(--txt); line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; animation:buyIn .3s cubic-bezier(.2,1.3,.5,1) both; }
+.buyline b{ font-family:'Press Start 2P'; font-size:10px; color:var(--amber-l); }
+.buyline .bln-c{ font-family:'Press Start 2P'; font-size:9px; }
 .ab-chat{ flex:1; min-height:0; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-end; gap:5px; }
 .ab-chat .cmsg{ font-size:16px; line-height:1.2; }
 .ab-chat .cu{ font-family:'Press Start 2P'; font-size:8px; margin-right:6px; }
@@ -443,8 +447,6 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
   </div>
 
   <div id="action">
-    <button class="btn buy" id="btnBuy" data-i18n="btnBuy">● SIMULAR COMPRA</button>
-    <button class="btn auto" id="btnAuto">▶ AUTO</button>
     <span class="creds" id="creds">HINCHADA 0◎</span>
   </div>
 
@@ -713,7 +715,7 @@ function renderTopbar(){
  if(S.srv){ var _sN=Math.max(1,S.srv.partidos_ronda||1),_sP=S.srv.partido||1,_sR=(S.srv.ronda||"").toUpperCase(); $("#tbPhase").textContent=_sR; $("#tbFill").style.width=(Math.min(_sN,_sP)/_sN*100)+"%"; $("#tbProg").textContent="🏆 "+_sR+" · "+(LANG==="es"?"Partido ":"Match ")+_sP+"/"+_sN; } else { $("#tbPhase").textContent=roundNameFor(S.bracket?S.bracket.teams.length:16)[LANG].toUpperCase();
  $("#tbFill").style.width=(function(){var b=S.bracket,N=Math.max(1,(b?b.teams.length:16)/2);return (Math.min(N,b?b.pos:0)/N*100);})()+"%";
  $("#tbProg").textContent=(function(){var b=S.bracket,n=(b?b.teams.length:16),N=Math.max(1,n/2),pos=(b?b.pos:0),rn=roundNameFor(n);return "🏆 "+rn[LANG].toUpperCase()+" · "+(LANG==="es"?"Partido ":"Match ")+Math.min(N,pos+1)+"/"+N;})(); }
- $("#creds").textContent=i18n('hype')+" "+S.sold.toFixed(1)+"◎";
+ $("#creds").textContent=i18n('hype')+" "+((S.srv&&S.srv.volumen)||0).toFixed(1)+"◎";
  $("#marq").textContent=S.headlines[0];
 }
 /* ====================================================== PANEL AUTO-ROTATIVO (estado real del torneo, data del server) */
@@ -792,6 +794,14 @@ function renderRotPanel(){
 function rotAdvance(){ var n=rotSlides().length; if(n>0){ rotIdx=(rotIdx+1)%n; renderRotPanel(); } }
 function startRot(){ if(rotTimer) return; rotTimer=setInterval(rotAdvance,5000); }
 function applyGroups(g){ S.srvGroups=g.grupos||[]; S.srvFase=g.fase; try{ renderRotPanel(); }catch(e){} }
+/* feed de compras EN VIVO desde el server (mensaje { type:"buy", sol, side, short, name, color }) */
+function pushServerBuy(b){
+ var box=$("#buys"); if(!box||!b) return;
+ var line=document.createElement("div"); line.className="buyline";
+ line.innerHTML='<b>'+(+b.sol||0).toFixed(2)+'◎</b> → <span class="bln-c" style="color:'+(b.color||'#cfe3e0')+'">'+esc(b.short||'?')+'</span>';
+ box.insertBefore(line, box.firstChild);
+ while(box.children.length>8) box.removeChild(box.lastChild);   // máx 8 líneas, la más vieja se cae
+}
 /* ====================================================== RENDER: SCREEN (solo live) */
 let ANIM=true;
 function renderScreen(animate){ ANIM=animate!==false; renderLive(); }
@@ -800,9 +810,18 @@ function meterHTML(pct,color){
  for(let i=0;i<segs;i++) h+='<i class="'+(i<lit?'on':'')+'"></i>';
  return h+'</span>';
 }
+/* choque de kit: si el visitante tiene un color muy parecido al local, usa una camiseta contrastante */
+function _hex2rgb(h){ h=h.replace('#',''); return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]; }
+function _lum(c){ return 0.2126*c[0]+0.7152*c[1]+0.0722*c[2]; }
+function awayKit(homeHex, awayHex){
+  var h=_hex2rgb(homeHex), a=_hex2rgb(awayHex);
+  var d=Math.sqrt(Math.pow(h[0]-a[0],2)+Math.pow(h[1]-a[1],2)+Math.pow(h[2]-a[2],2));
+  if(d>=110) return awayHex;                      // contrastan: visitante usa su color
+  return _lum(h)>140 ? "#15151f" : "#eaeaea";     // chocan: oscuro si local claro, claro si local oscuro
+}
 function meterRowHTML(m){
  return '<div class="meter-row"><span class="ml">'+m.home.short+'</span>'+meterHTML(m.atkH,m.home.color)+'<span class="mp">'+Math.round(m.atkH)+'%</span></div>'
-   +'<div class="meter-row"><span class="ml">'+m.away.short+'</span>'+meterHTML(m.atkA,m.away.color)+'<span class="mp">'+Math.round(m.atkA)+'%</span></div>';
+   +'<div class="meter-row"><span class="ml">'+m.away.short+'</span>'+meterHTML(m.atkA,awayKit(m.home.color,m.away.color))+'<span class="mp">'+Math.round(m.atkA)+'%</span></div>';
 }
 function playsHTML(m){
  if(m.events.length===0) return '<div class="hint">'+i18n('waitingPlays')+'</div>';
@@ -846,7 +865,6 @@ function applyLang(){
  try{ var nh=(document.querySelectorAll&&document.querySelectorAll('[data-i18n-html]'))||[]; for(var j=0;j<nh.length;j++){ nh[j].innerHTML=i18n(nh[j].getAttribute('data-i18n-html')); } }catch(e){}
  try{ var lb=$("#tbLang"); if(lb) lb.textContent=i18n('langBtn'); }catch(e){}
  try{ setFeedState(feedState); }catch(e){}
- try{ var ba=$("#btnAuto"); if(ba) ba.textContent=S.auto?i18n('btnStop'):i18n('btnAuto'); }catch(e){}
  try{ S.headlines=Array.from({length:8},makeHeadline); }catch(e){}
  try{ if(S.started){ renderHud(); renderRotPanel(); renderScreen(false); } renderTopbar(); }catch(e){}
 }
@@ -1135,7 +1153,7 @@ function applyState(s){
  m.home=chain(ai); m.away=chain(bi); m.ai=ai; m.bi=bi;
  m.sh=s.local.goles; m.sa=s.visita.goles; m.min=s.minuto;
  m.atkH=s.local.atk||0; m.atkA=s.visita.atk||0;
- S.srv={fase:s.fase,ronda:s.ronda,ronda_size:s.ronda_size,fecha:s.fecha,grupo:s.grupo,partido:s.partido,partidos_ronda:s.partidos_ronda,activo:s.activo,campeon:s.campeon,tercero:s.tercero};
+ S.srv={fase:s.fase,ronda:s.ronda,ronda_size:s.ronda_size,fecha:s.fecha,grupo:s.grupo,partido:s.partido,partidos_ronda:s.partidos_ronda,activo:s.activo,volumen:s.volumen,campeon:s.campeon,tercero:s.tercero};
  if(S._lastRonda && S._lastRonda!==s.ronda && !s.campeon){ try{ pushChat(i18n('tournament'),"🔓 "+(s.ronda||"").toUpperCase(), "#ffb02e"); }catch(e){} }
  S._lastRonda=s.ronda;
  window.RWC_VE=(s.energia||0)/100; window.RWC_VA=!!s.activo;
@@ -1150,7 +1168,7 @@ function connectBackend(){
  if(typeof WebSocket==="undefined") return;
  try{ srvWS=new WebSocket(BACKEND_WS); }catch(e){ srvTries++; setTimeout(connectBackend, Math.min(8000,1000*srvTries)); return; }
  srvWS.onopen=function(){ srvTries=0; try{ setFeedState("live"); }catch(e){} };
- srvWS.onmessage=function(ev){ var s; try{ s=JSON.parse(ev.data); }catch(e){ return; } if(!s||!s.type) return; if(s.type==="state") applyState(s); else if(s.type==="bracket") applyBracket(s); else if(s.type==="groups") applyGroups(s); };
+ srvWS.onmessage=function(ev){ var s; try{ s=JSON.parse(ev.data); }catch(e){ return; } if(!s||!s.type) return; if(s.type==="state") applyState(s); else if(s.type==="bracket") applyBracket(s); else if(s.type==="groups") applyGroups(s); else if(s.type==="buy") pushServerBuy(s); };
  srvWS.onclose=function(){ try{ setFeedState("reconnecting"); }catch(e){} srvTries++; setTimeout(connectBackend, Math.min(8000,1000*srvTries)); };
  srvWS.onerror=function(){ try{ srvWS.close(); }catch(e){} };
 }
@@ -1183,19 +1201,13 @@ function startGame(){
  blip("confirm");
 }
 $("#title").addEventListener("click",startGame);
-$("#btnBuy").addEventListener("click",()=>{ ensureAudio(); ingestPurchase(+(Math.random()*Math.random()*4+0.05).toFixed(2)); });
-$("#btnAuto").addEventListener("click",()=>{
- S.auto=!S.auto; $("#btnAuto").classList.toggle("on",S.auto); $("#btnAuto").textContent=S.auto?i18n('btnStop'):i18n('btnAuto'); blip("sel");
- if(S.auto){ ensureAudio(); S.autoTimer=setInterval(()=>ingestPurchase(+(Math.random()*Math.random()*4+0.05).toFixed(2)),2100); }
- else { clearInterval(S.autoTimer); S.autoTimer=null; }
-});
+/* botones SIMULATE BUY / AUTO retirados: la página es solo transmisión en vivo (las compras llegan del server) */
 $("#tbSnd").addEventListener("click",()=>{ S.sound=!S.sound; $("#tbSnd").textContent=S.sound?"🔊":"🔇"; ensureAudio(); blip("sel"); });
 $("#tbLang").addEventListener("click",()=>{ LANG=(LANG==="en")?"es":"en"; applyLang(); blip("sel"); });
 window.addEventListener("keydown",e=>{
  if(e.target && (e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")) return;
  if(!S.started){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); startGame(); } return; }
  if(e.key==="ArrowRight"||e.key==="ArrowDown"||e.key==="ArrowLeft"||e.key==="ArrowUp"){ e.preventDefault(); rotAdvance(); }
- else if(e.key.toLowerCase()==="b"){ ingestPurchase(+(Math.random()*Math.random()*4+0.05).toFixed(2)); }
 });
 
 /* ====================================================== 3D: ESTADIO JUMBOTRON */
@@ -1336,10 +1348,10 @@ function init3D(){
   g.scale.setScalar(1.4); scene.add(g); return {g,legL,legR,armL,armR,face};
  }
  function spawnTeam(jersey,team,n){ for(let i=0;i<n;i++){ const p=makePlayer(jersey); p.team=team; p.faceToken=nextFace(); p.off=Math.random()*6.28; p.spread=1.4+Math.random()*2.6; p.phase=Math.random()*6.28; p.tumble=0; p.biasX=(team==="home"?1:-1)*(0.6+i*0.9); p.g.position.set(p.biasX,0,(Math.random()*4-2)-1); players.push(p); } }
- spawnTeam(S.match.home.color,"home",3); spawnTeam(S.match.away.color,"away",3);
+ spawnTeam(S.match.home.color,"home",3); spawnTeam(awayKit(S.match.home.color,S.match.away.color),"away",3);
  function tumbleRandom(){ const p=players[rint(players.length)]; if(p) p.tumble=1; }
  let lastTeamKey=S.match.home.short+S.match.away.short;
- function recolor(){ const m=S.match; faceBag=[]; players.forEach(p=>{ p.subPhase=0; const col=p.team==="home"?m.home.color:m.away.color; p.g.children[0].material.color.set(col); p.faceToken=nextFace(); }); setupFaces(); }
+ function recolor(){ const m=S.match; faceBag=[]; players.forEach(p=>{ p.subPhase=0; const col=p.team==="home"?m.home.color:awayKit(m.home.color,m.away.color); p.g.children[0].material.color.set(col); p.faceToken=nextFace(); }); setupFaces(); }
  // ===================== CAMBIOS DE JUGADORES (sustituciones)
  let lastSubT=0;
  function faceImgSrc(tok){ try{ const k=tok[0]==="@"?tok.slice(1):tok; if(tok[0]==="@" && typeof MEME_IMG!=="undefined" && MEME_IMG[k]) return MEME_IMG[k]; const tex=memeTex(tok); const im=tex&&tex.image; if(im){ if(im.toDataURL) return im.toDataURL(); if(im.src) return im.src; } }catch(e){} return ""; }
