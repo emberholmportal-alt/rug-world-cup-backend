@@ -228,7 +228,9 @@ async def api_unlike(cid: int, token: str = ""):
 async def api_dev_buy(sol: float = 0.5, key: str = ""):
     if not DEV_KEY or key != DEV_KEY:
         return JSONResponse({"error": "no autorizado"}, status_code=403)
-    torneo.ingest_buy(float(sol))
+    info = torneo.ingest_buy(float(sol))
+    if info:
+        await hub.broadcast({"type": "buy", **info})
     return torneo.snapshot()
 
 
