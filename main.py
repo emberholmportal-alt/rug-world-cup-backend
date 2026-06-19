@@ -1,6 +1,6 @@
-# RUG WORLD CUP 26 — backend de transmisión en vivo
-# Motor real del torneo (48 chains, eliminación directa) corriendo en el server
-# y transmitido por WebSocket a todos. PumpPortal se conecta en el próximo paso.
+# RUG WORLD CUP 26 — backend de transmision en vivo
+# Motor real del torneo (48 chains, eliminacion directa) corriendo en el server
+# y transmitido por WebSocket a todos. PumpPortal se conecta en el proximo paso.
 
 import asyncio
 import json
@@ -76,12 +76,10 @@ async def ws_endpoint(ws: WebSocket):
         hub.disconnect(ws)
 
 
-@app.get("/test", response_class=HTMLResponse)
-async def test_page():
-    return """<!doctype html><meta charset="utf-8">
+TEST_HTML = """<!doctype html><meta charset="utf-8">
 <title>RUGWC backend</title>
 <body style="font-family:monospace;background:#070b12;color:#cfe3e0;padding:24px;font-size:18px">
-<h3 style="color:#ffb02e">RUG WORLD CUP 26 \u2014 motor en vivo</h3>
+<h3 style="color:#ffb02e">RUG WORLD CUP 26 - motor en vivo</h3>
 <div id="round" style="color:#36e0d0;margin-bottom:10px">conectando...</div>
 <div id="match" style="font-size:28px;margin:10px 0"></div>
 <div id="champ" style="color:#ffb02e;font-size:22px;margin-top:14px"></div>
@@ -91,13 +89,18 @@ var ws = new WebSocket(proto + "://" + location.host + "/ws");
 ws.onmessage = function(e){
   var s = JSON.parse(e.data);
   document.getElementById("round").textContent =
-    "\u25cf " + s.ronda + " \u00b7 Partido " + s.partido + "/" + s.partidos_ronda + " \u00b7 min " + s.minuto + "'";
+    "EN VIVO - " + s.ronda + " - Partido " + s.partido + "/" + s.partidos_ronda + " - min " + s.minuto + "'";
   document.getElementById("match").innerHTML =
     '<span style="color:' + s.local.color + '">' + s.local.short + '</span> ' +
     s.local.goles + ' - ' + s.visita.goles +
     ' <span style="color:' + s.visita.color + '">' + s.visita.short + '</span>';
-  document.getElementById("champ").textContent = s.campeon ? ("\ud83c\udfc6 CAMPE\u00d3N: " + s.campeon) : "";
+  document.getElementById("champ").textContent = s.campeon ? ("CAMPEON: " + s.campeon) : "";
 };
-ws.onclose = function(){ document.getElementById("round").textContent = "\u25cb desconectado"; };
+ws.onclose = function(){ document.getElementById("round").textContent = "desconectado"; };
 </script>
 </body>"""
+
+
+@app.get("/test", response_class=HTMLResponse)
+async def test_page():
+    return TEST_HTML
