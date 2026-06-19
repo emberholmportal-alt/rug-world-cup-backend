@@ -28,6 +28,7 @@ class Hub:
         self.conns.add(ws)
         await ws.send_text(json.dumps(torneo.snapshot()))
         await ws.send_text(json.dumps(torneo.bracket_state()))
+        await ws.send_text(json.dumps(torneo.groups_state()))
 
     def disconnect(self, ws: WebSocket):
         self.conns.discard(ws)
@@ -56,6 +57,7 @@ async def sim_loop():
         if torneo.version != last_version:
             last_version = torneo.version
             await hub.broadcast(torneo.bracket_state())
+            await hub.broadcast(torneo.groups_state())
 
 
 @asynccontextmanager
@@ -85,6 +87,7 @@ app.add_middleware(
 
 # ---- comentarios: config y modelos ----
 ADMIN_KEY = os.environ.get("ADMIN_KEY", "")
+DEV_KEY = os.environ.get("DEV_KEY", "")
 RATE_SECONDS = 20      # 1 comentario cada 20s por token (antispam)
 MAX_BODY = 500
 MAX_NICK = 24
@@ -219,6 +222,14 @@ async def api_unlike(cid: int, token: str = ""):
     n = await db.like_comment(cid, token, False)
     await hub.broadcast({"type": "comment_like", "id": cid, "likes": n})
     return {"likes": n}
+
+
+@app.get("/api/dev/buy")
+async def api_dev_buy(sol: float = 0.5, key: str = ""):
+    if not DEV_KEY or key != DEV_KEY:
+        return JSONResponse({"error": "no autorizado"}, status_code=403)
+    torneo.ingest_buy(float(sol))
+    return torneo.snapshot()
 
 
 TEST_HTML = """<!doctype html><meta charset="utf-8">
