@@ -294,9 +294,13 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
 
 /* ===================== PANEL LATERAL (resumen + chat) */
 #about{ position:fixed; right:0; top:104px; bottom:38px; width:248px; z-index:31; display:none;
-  flex-direction:column; gap:12px; padding:10px 12px 10px 0; }
+  flex-direction:column; gap:12px; padding:10px 12px 10px 0; overflow-y:auto; }
 #about.on{ display:flex; }
 .ab-card{ background:var(--panel); backdrop-filter:blur(3px); border:3px solid var(--line); padding:12px 13px; }
+.ab-prize{ flex:none; }
+.ab-prize .ab-h{ color:var(--amber-l); }
+.ab-prize-p{ font-size:12.5px; line-height:1.42; color:var(--txt); margin:0; }
+.prize-solscan{ color:var(--cyan); text-decoration:underline; }
 .ab-h{ font-family:'Press Start 2P'; font-size:10px; color:var(--amber); margin-bottom:9px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 .ab-p{ font-size:16px; line-height:1.45; color:var(--txt); margin:0 0 9px; }
 .ab-p b{ color:var(--amber-l); }
@@ -462,6 +466,10 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
       <div class="ab-sub" data-i18n="buysSub">cada compra de $RUGWC pumpea ⚡ a 1 de las 2 chains en cancha</div>
       <div id="buys" class="ab-buys"></div>
     </div>
+    <div class="ab-card ab-prize">
+      <div class="ab-h" data-i18n="prizeTitle">🏆 PREMIO HOLDERS</div>
+      <p class="ab-prize-p" data-i18n-html="prizeBody">25% de la primera compra del dev en $RUGWC, sorteado entre holders al terminar el torneo. Entrás: seguí a @RUGWORLDCUP · reposteá el post fijado · holdeá ≥ [X] $RUGWC (≈USD 15). 1 entrada cada [X] — más holdeás, más chances. Snapshots sorpresa al azar; cumplí el mínimo en todos. El dev NO vende — wallet pública en <a class='prize-solscan' href='#' target='_blank' rel='noopener'>Solscan</a>. Ganador con prueba on-chain. Sátira · riesgo extremo · no es asesoramiento financiero.</p>
+    </div>
   </aside>
   </div><!-- /wrap -->
 
@@ -586,6 +594,8 @@ const TR={
    projTitle:"🪤 THE PROJECT",
    projP1:"<b>RUG WORLD CUP 26</b>: 48 blockchains enter a rigged, corrupt World Cup. Every <b>$RUGWC</b> buy charges a chain's ATTACK — when the bar hits 100%, the <b>GOAL</b> drops ⚽.",
    projP2:"The tournament advances as <b>$RUGWC grows</b>. In the end, one chain <b>rugs them all</b> and takes the <b>Golden Rug</b> 🏆.",
+   prizeTitle:"🏆 HOLDER PRIZE",
+   prizeBody:"25% of the dev's first $RUGWC buy, raffled to holders when the tournament ends. Enter: follow @RUGWORLDCUP · repost the pinned post · hold ≥ [X] $RUGWC (≈$15). 1 entry per [X] held — hold more, win more. Random surprise snapshots; hold the minimum at every one. Dev does NOT sell — wallet public on <a class='prize-solscan' href='#' target='_blank' rel='noopener'>Solscan</a>. Winner proven on-chain. Satire · extreme risk · not financial advice.",
    satire:"100% SATIRE", buysState:"● live",
    buysSub:"each $RUGWC buy pumps ⚡ 1 of the 2 chains on the pitch", pumps:"pumps",
    titleSub:"48 chains enter. one rugs them all. 🪤", insertCoin:"— insert a shitcoin to continue —",
@@ -613,6 +623,8 @@ const TR={
    projTitle:"🪤 EL PROYECTO",
    projP1:"<b>RUG WORLD CUP 26</b>: 48 blockchains entran a un Mundial trucho y corrupto. Cada compra de <b>$RUGWC</b> carga el ATAQUE de una chain — cuando la barra llega a 100%, cae el <b>GOL</b> ⚽.",
    projP2:"El torneo avanza a medida que <b>crece $RUGWC</b>. Al final, una sola chain las <b>ruggea a todas</b> y se queda con el <b>Golden Rug</b> 🏆.",
+   prizeTitle:"🏆 PREMIO HOLDERS",
+   prizeBody:"25% de la primera compra del dev en $RUGWC, sorteado entre holders al terminar el torneo. Entrás: seguí a @RUGWORLDCUP · reposteá el post fijado · holdeá ≥ [X] $RUGWC (≈USD 15). 1 entrada cada [X] — más holdeás, más chances. Snapshots sorpresa al azar; cumplí el mínimo en todos. El dev NO vende — wallet pública en <a class='prize-solscan' href='#' target='_blank' rel='noopener'>Solscan</a>. Ganador con prueba on-chain. Sátira · riesgo extremo · no es asesoramiento financiero.",
    satire:"100% SÁTIRA", buysState:"● en vivo",
    buysSub:"cada compra de $RUGWC pumpea ⚡ a 1 de las 2 chains en cancha", pumps:"pumpea",
    titleSub:"48 chains entran. una sola las ruggea a todas. 🪤", insertCoin:"— insertá una shitcoin para continuar —",
@@ -711,8 +723,18 @@ function flagHTML(c,size){
   +'</span>';
 }
 /* ====================================================== RENDER: TOPBAR + ACTION */
+var RONDA_I18N = {
+  "Fase de grupos":   {es:"FASE DE GRUPOS", en:"GROUP STAGE"},
+  "16avos de final":  {es:"16AVOS DE FINAL", en:"ROUND OF 32"},
+  "Octavos de final": {es:"OCTAVOS DE FINAL", en:"ROUND OF 16"},
+  "Cuartos de final": {es:"CUARTOS DE FINAL", en:"QUARTERFINALS"},
+  "Semifinal":        {es:"SEMIFINAL", en:"SEMIFINALS"},
+  "Tercer puesto":    {es:"3ER PUESTO", en:"THIRD PLACE"},
+  "Final":            {es:"FINAL", en:"FINAL"}
+};
+function rondaLabel(r){ var m=RONDA_I18N[r]; return ((m?m[LANG]:r)||"").toUpperCase(); }
 function renderTopbar(){
- if(S.srv){ var _sN=Math.max(1,S.srv.partidos_ronda||1),_sP=S.srv.partido||1,_sR=(S.srv.ronda||"").toUpperCase(); $("#tbPhase").textContent=_sR; $("#tbFill").style.width=(Math.min(_sN,_sP)/_sN*100)+"%"; $("#tbProg").textContent="🏆 "+_sR+" · "+(LANG==="es"?"Partido ":"Match ")+_sP+"/"+_sN; } else { $("#tbPhase").textContent=roundNameFor(S.bracket?S.bracket.teams.length:16)[LANG].toUpperCase();
+ if(S.srv){ var _sN=Math.max(1,S.srv.partidos_ronda||1),_sP=S.srv.partido||1,_sR=rondaLabel(S.srv.ronda); $("#tbPhase").textContent=_sR; $("#tbFill").style.width=(Math.min(_sN,_sP)/_sN*100)+"%"; $("#tbProg").textContent="🏆 "+_sR+" · "+(LANG==="es"?"Partido ":"Match ")+_sP+"/"+_sN; } else { $("#tbPhase").textContent=roundNameFor(S.bracket?S.bracket.teams.length:16)[LANG].toUpperCase();
  $("#tbFill").style.width=(function(){var b=S.bracket,N=Math.max(1,(b?b.teams.length:16)/2);return (Math.min(N,b?b.pos:0)/N*100);})()+"%";
  $("#tbProg").textContent=(function(){var b=S.bracket,n=(b?b.teams.length:16),N=Math.max(1,n/2),pos=(b?b.pos:0),rn=roundNameFor(n);return "🏆 "+rn[LANG].toUpperCase()+" · "+(LANG==="es"?"Partido ":"Match ")+Math.min(N,pos+1)+"/"+N;})(); }
  $("#creds").textContent=i18n('hype')+" "+((S.srv&&S.srv.volumen)||0).toFixed(1)+"◎";
@@ -1027,7 +1049,7 @@ function centerPop(cfg){
  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove("show"), quick?1600:2400);
 }
 function goalFX(team){
- centerPop({kind:"goal",team,label:GOAL.label[LANG],color:"#3ddc84"}); sfx("goal");
+ centerPop({kind:"goal", team, label:(team.name||team.short), color:(team.color||"#3ddc84"), sub:"⚽ "+GOAL.label[LANG]}); sfx("goal");
  if(REDUCE){ flashScreen("rgba(61,220,132,.3)"); return; }
  confetti(); flashScreen("rgba(61,220,132,.5)"); shake("m");
 }
@@ -1243,7 +1265,7 @@ function drawBoard(ctx,W,H,fontReady){
  ctx.fillStyle="rgba(0,0,0,0.2)"; for(let yy=0;yy<H;yy+=4) ctx.fillRect(0,yy,W,2);
  ctx.textAlign="center"; ctx.textBaseline="middle";
  ctx.fillStyle="#ffb02e"; ctx.font=Math.round(H*0.07)+"px "+F; ctx.fillText("RUG WORLD CUP 26",W/2,H*0.11);
- ctx.fillStyle="#36e0d0"; ctx.font=Math.round(H*0.045)+"px "+F; ctx.fillText(((S.srv&&S.srv.ronda)||(LANG==="es"?"Mundial":"World Cup")).toUpperCase(),W/2,H*0.2);
+ ctx.fillStyle="#36e0d0"; ctx.font=Math.round(H*0.045)+"px "+F; ctx.fillText(((S.srv&&S.srv.ronda)?rondaLabel(S.srv.ronda):(LANG==="es"?"MUNDIAL":"WORLD CUP")),W/2,H*0.2);
  const fw=W*0.2,fh=H*0.3,fy=H*0.28;
  drawFlag3D(ctx,W*0.06,fy,fw,fh,m.home,F); drawFlag3D(ctx,W*0.74,fy,fw,fh,m.away,F);
  ctx.fillStyle=goalFlash?"#3ddc84":"#ffe9b0"; ctx.font=Math.round(H*0.2)+"px "+F; ctx.fillText(m.sh+":"+m.sa,W/2,H*0.4);
@@ -1462,7 +1484,7 @@ function init3D(){
  }
  const DRAWERS={troll:1,pepe:1,doge:1,wojak:1,trump:1,elon:1,stonks:1,sbf:1,vitalik:1,cz:1,dokwon:1,saylor:1};
  const LABELS={cz:"CZ",vitalik:"VITALIK",sbf:"SBF",dokwon:"DO KWON",saylor:"SAYLOR",justinsun:"JUSTIN SUN",cobie:"COBIE",ansem:"ANSEM",gigachad:"GIGACHAD",chad:"CHAD",soyjak:"SOYJAK"};
- const realTex={}; (function(){ const tl=new THREE.TextureLoader(); if(tl.setCrossOrigin) tl.setCrossOrigin("anonymous"); Object.keys(MEME_IMG||{}).forEach(k=>{ const u=MEME_IMG[k]; if(!u) return; try{ const tx=tl.load(u,t=>{t.magFilter=THREE.LinearFilter;t.needsUpdate=true;},undefined,()=>{ delete realTex[k]; if(memeCache["@"+k]) delete memeCache["@"+k]; if(typeof setupFaces==="function") setupFaces(); }); tx.magFilter=THREE.LinearFilter; realTex[k]=tx; }catch(e){} }); })();
+ const realTex={}; (function(){ const tl=new THREE.TextureLoader(); if(tl.setCrossOrigin) tl.setCrossOrigin("anonymous"); Object.keys(MEME_IMG||{}).forEach(k=>{ const u=MEME_IMG[k]; if(!u) return; try{ const tx=tl.load(u,t=>{t.magFilter=THREE.LinearFilter;t.needsUpdate=true;},undefined,()=>{ delete realTex[k]; if(memeCache["@"+k]) delete memeCache["@"+k]; if(typeof setupFaces==="function") setupFaces(); }); tx.magFilter=THREE.LinearFilter; if(k==="lisasu"){ tx.flipY=false; tx.needsUpdate=true; } /* foto base64 de Lisa Su guardada invertida */ realTex[k]=tx; }catch(e){} }); })();
  function memeTex(tok){ if(tok[0]==="@" && realTex[tok.slice(1)]) return realTex[tok.slice(1)]; if(memeCache[tok]) return memeCache[tok]; const isFace=tok[0]==="@"; const c=document.createElement("canvas"); let Wc=256,Hc=256; if(!isFace && /[A-Za-z0-9]/.test(tok)){ Wc=512;Hc=200; } c.width=Wc;c.height=Hc; const x=c.getContext("2d"); if(isFace){ const key=tok.slice(1); if(DRAWERS[key]){ drawMemeFace(x,key); } else { const lab=(LABELS[key]||key).toUpperCase().split(" "); x.font="bold 72px Arial Black, Impact, sans-serif"; x.textAlign="center"; x.textBaseline="middle"; x.lineWidth=13; x.strokeStyle="#05080e"; const ys=lab.length>1?[96,158]:[122]; lab.forEach((w,i)=>{ x.strokeText(w,128,ys[i]||122); x.fillStyle=pick(["#ffb02e","#36e0d0","#3ddc84","#ff3d7f"]); x.fillText(w,128,ys[i]||122); }); x.font="46px serif"; x.fillText("🪙",128,210); } } else if(/[A-Za-z0-9]/.test(tok)){ const col=pick(["#ffb02e","#36e0d0","#3ddc84","#ff3d7f","#ff4d4d","#b06bff"]); x.font="bold 104px Arial Black, Impact, sans-serif"; x.textAlign="center"; x.textBaseline="middle"; x.lineWidth=16; x.strokeStyle="#05080e"; x.strokeText(tok,Wc/2,Hc/2); x.fillStyle=col; x.fillText(tok,Wc/2,Hc/2); } else { x.font="200px serif"; x.textAlign="center"; x.textBaseline="middle"; x.fillText(tok,Wc/2,Hc/2+12); } const t=new THREE.CanvasTexture(c); t.magFilter=THREE.LinearFilter; memeCache[tok]=t; return t; }
  function setupFaces(){ players.forEach(p=>{ if(p.face){ p.face.material.map=memeTex(p.faceToken); p.face.material.needsUpdate=true; } }); }
  setupFaces();
