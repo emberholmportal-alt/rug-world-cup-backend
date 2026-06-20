@@ -307,6 +307,19 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
 .ab-h{ font-family:'Press Start 2P'; font-size:10px; color:var(--amber); margin-bottom:7px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 .ab-p{ font-size:14px; line-height:1.35; color:var(--txt); margin:0 0 6px; }
 .ab-p b{ color:var(--amber-l); }
+.ab-proj{ font-size:13px; line-height:1.4; color:var(--txt); }
+.ab-proj p{ margin:0 0 7px; }
+.ab-proj h4{ font-family:'Press Start 2P'; font-size:8px; color:var(--amber); margin:9px 0 4px; letter-spacing:.5px; }
+.ab-proj .k{ color:var(--amber-l); font-weight:bold; }
+.ab-proj .disc{ font-size:11px; color:var(--mut); margin-top:9px; }
+.hud-poss{ font-family:'Press Start 2P'; font-size:7px; color:var(--mut); text-align:center; margin:3px 0 1px; }
+#rwcPause.rwcov{ position:fixed; top:42%; left:50%; transform:translate(-50%,-50%); z-index:60; text-align:center; pointer-events:none; background:rgba(7,11,18,.8); border:2px solid rgba(255,176,46,.55); border-radius:10px; padding:18px 30px; backdrop-filter:blur(3px); max-width:70vw; }
+#rwcPause .ov-t{ font-family:'Press Start 2P'; font-size:18px; color:var(--amber); line-height:1.5; text-shadow:0 0 14px rgba(255,176,46,.6); }
+#rwcPause .ov-c{ font-family:'Press Start 2P'; font-size:24px; color:var(--amber-l); margin-top:10px; }
+#rwcPause .ov-s{ font-size:14px; color:var(--cyan); margin-top:9px; }
+#rwcPause.pen{ border-color:#ff4d4d; }
+#rwcPause.pen .ov-t{ color:#ff4d4d; text-shadow:0 0 14px rgba(255,77,77,.65); animation:blink .8s steps(2) infinite; }
+#rwcPause.champ{ border-color:#ffd24a; box-shadow:0 0 30px rgba(255,210,74,.4); }
 .ab-tags{ display:flex; flex-wrap:wrap; gap:5px; margin-top:4px; }
 .ab-tags span{ font-family:'Press Start 2P'; font-size:7px; color:var(--cyan); border:2px solid var(--line); padding:4px 6px; }
 .ab-chatwrap{ flex:1; min-height:0; display:flex; flex-direction:column; }
@@ -449,10 +462,6 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
     <div class="leftcol">
       <div id="hudbar" class="hudbar"></div>
       <nav class="rotpanel" id="rotpanel"></nav>
-      <div class="ab-card ab-buyswrap leftbuys">
-        <div class="ab-h">💸 <span data-i18n="buysLbl">COMPRAS</span> <span class="brug-lbl">$RUGWC</span> <span class="ab-state" id="feedState">● demo</span></div>
-        <div id="buys" class="ab-buys"></div>
-      </div>
     </div>
     <div class="screen"><div class="scr" id="screen"></div></div>
   </div>
@@ -464,8 +473,7 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
   <aside id="about">
     <div class="ab-card">
       <div class="ab-h" data-i18n="projTitle">🪤 EL PROYECTO</div>
-      <p class="ab-p" data-i18n-html="projP1"><b>RUG WORLD CUP 26</b>: 48 blockchains entran a un Mundial trucho y corrupto. Cada compra de <b>$RUGWC</b> carga el ATAQUE de una chain — cuando la barra llega a 100%, cae el <b>GOL</b> ⚽.</p>
-      <p class="ab-p" data-i18n-html="projP2">El torneo avanza a medida que <b>crece $RUGWC</b>. Al final, una sola chain las <b>ruggea a todas</b> y se queda con el <b>Golden Rug</b> 🏆.</p>
+      <div class="ab-proj" data-i18n-html="projBody"><p>48 blockchains compiten en el torneo más corrupto de internet por el <span class="k">Golden Rug</span>. El campeonato <span class="k">corre solo durante 72 horas</span>, las 24hs, hasta que una cadena las ruguea a todas.</p><h4>¿CÓMO FUNCIONA?</h4><p><span class="k">104 partidos</span> repartidos en 72hs. Los resultados se <span class="k">sortean al azar en el momento</span> que se juega cada partido — nadie sabe quién gana hasta que pasa. El reloj lo maneja el <span class="k">tiempo</span>, no las compras.</p><h4>SIN EMPATES</h4><p>Ningún partido termina empatado. Si hay empate, se define por <span class="k">PENALES</span>.</p><h4>EL FORMATO</h4><p>Fase de grupos → 16avos → Octavos → Cuartos → Semis → Final → Campeón. El torneo arranca y se juega solo de principio a fin.</p><p class="disc">100% sátira. Proyecto de parodia, no afiliado a FIFA ni a ninguna de las cadenas mencionadas. <span class="k">Las compras del token NO afectan el torneo.</span> CA: paste-your-contract-address · X / Telegram. 48 chains enter. One chain rugs them all. 🪤</p></div>
       <div class="ab-tags"><span>48 CHAINS</span><span>$RUGWC</span><span>pump.fun</span><span>SOLANA</span><span data-i18n="satire">100% SÁTIRA</span></div>
     </div>
     <div class="ab-card ab-prize">
@@ -594,8 +602,7 @@ const TR={
    varReview:"⏸ VAR REVIEW", btnBuy:"● SIMULATE BUY", btnAuto:"▶ AUTO", btnStop:"■ STOP",
    finalTie:" (hype decides)",
    projTitle:"🪤 THE PROJECT",
-   projP1:"<b>RUG WORLD CUP 26</b>: 48 blockchains enter a rigged, corrupt World Cup. Every <b>$RUGWC</b> buy charges a chain's ATTACK — when the bar hits 100%, the <b>GOAL</b> drops ⚽.",
-   projP2:"The tournament advances as <b>$RUGWC grows</b>. In the end, one chain <b>rugs them all</b> and takes the <b>Golden Rug</b> 🏆.",
+   projBody:"<p>48 blockchains compete in the most corrupt tournament on the internet for the <span class='k'>Golden Rug</span>. The championship <span class='k'>runs on its own for 72 hours</span>, around the clock, until one chain rugs them all.</p><h4>HOW IT WORKS</h4><p><span class='k'>104 matches</span> across 72 hours. Results are <span class='k'>drawn at random the moment</span> each match is played — nobody knows who wins until it happens. The clock is driven by <span class='k'>time</span>, not by buys.</p><h4>NO DRAWS</h4><p>No match ends in a tie. If it's level, it's settled on <span class='k'>PENALTIES</span>.</p><h4>THE FORMAT</h4><p>Group stage → Round of 32 → Round of 16 → Quarters → Semis → Final → Champion. The tournament kicks off and plays itself from start to finish.</p><p class='disc'>100% satire. Parody project, not affiliated with FIFA or any of the chains mentioned. <span class='k'>Token buys do NOT affect the tournament.</span> CA: paste-your-contract-address · X / Telegram. 48 chains enter. One chain rugs them all. 🪤</p>",
    prizeTitle:"🏆 HOLDER PRIZE",
    prizeBody:"25% of the dev's first $RUGWC buy, raffled to holders when the tournament ends. Enter: follow @RUGWORLDCUP · repost the pinned post · hold ≥ [X] $RUGWC (≈$15). 1 entry per [X] held — hold more, win more. Random surprise snapshots; hold the minimum at every one. Dev does NOT sell — wallet public on <a class='prize-solscan' href='#' target='_blank' rel='noopener'>Solscan</a>. Winner proven on-chain. Satire · extreme risk · not financial advice.",
    satire:"100% SATIRE", buysState:"● live",
@@ -623,8 +630,7 @@ const TR={
    varReview:"⏸ REVISIÓN VAR", btnBuy:"● SIMULAR COMPRA", btnAuto:"▶ AUTO", btnStop:"■ STOP",
    finalTie:" (define la hinchada)",
    projTitle:"🪤 EL PROYECTO",
-   projP1:"<b>RUG WORLD CUP 26</b>: 48 blockchains entran a un Mundial trucho y corrupto. Cada compra de <b>$RUGWC</b> carga el ATAQUE de una chain — cuando la barra llega a 100%, cae el <b>GOL</b> ⚽.",
-   projP2:"El torneo avanza a medida que <b>crece $RUGWC</b>. Al final, una sola chain las <b>ruggea a todas</b> y se queda con el <b>Golden Rug</b> 🏆.",
+   projBody:"<p>48 blockchains compiten en el torneo más corrupto de internet por el <span class='k'>Golden Rug</span>. El campeonato <span class='k'>corre solo durante 72 horas</span>, las 24hs, hasta que una cadena las ruguea a todas.</p><h4>¿CÓMO FUNCIONA?</h4><p><span class='k'>104 partidos</span> repartidos en 72hs. Los resultados se <span class='k'>sortean al azar en el momento</span> que se juega cada partido — nadie sabe quién gana hasta que pasa. El reloj lo maneja el <span class='k'>tiempo</span>, no las compras.</p><h4>SIN EMPATES</h4><p>Ningún partido termina empatado. Si hay empate, se define por <span class='k'>PENALES</span>.</p><h4>EL FORMATO</h4><p>Fase de grupos → 16avos → Octavos → Cuartos → Semis → Final → Campeón. El torneo arranca y se juega solo de principio a fin.</p><p class='disc'>100% sátira. Proyecto de parodia, no afiliado a FIFA ni a ninguna de las cadenas mencionadas. <span class='k'>Las compras del token NO afectan el torneo.</span> CA: paste-your-contract-address · X / Telegram. 48 chains enter. One chain rugs them all. 🪤</p>",
    prizeTitle:"🏆 PREMIO HOLDERS",
    prizeBody:"25% de la primera compra del dev en $RUGWC, sorteado entre holders al terminar el torneo. Entrás: seguí a @RUGWORLDCUP · reposteá el post fijado · holdeá ≥ [X] $RUGWC (≈USD 15). 1 entrada cada [X] — más holdeás, más chances. Snapshots sorpresa al azar; cumplí el mínimo en todos. El dev NO vende — wallet pública en <a class='prize-solscan' href='#' target='_blank' rel='noopener'>Solscan</a>. Ganador con prueba on-chain. Sátira · riesgo extremo · no es asesoramiento financiero.",
    satire:"100% SÁTIRA", buysState:"● en vivo",
@@ -735,17 +741,25 @@ var RONDA_I18N = {
   "Final":            {es:"FINAL", en:"FINAL"}
 };
 function rondaLabel(r){ var m=RONDA_I18N[r]; return ((m?m[LANG]:r)||"").toUpperCase(); }
+function credsText(){
+ var s=S.srv;
+ if(s&&s.campeon) return (LANG==="es"?"FINALIZADO":"COMPLETE");
+ var rem=(s&&s.remaining!=null)?s.remaining:null;
+ if(rem==null) return "";
+ var h=Math.floor(rem/3600), mn=Math.floor((rem%3600)/60);
+ return (LANG==="es"?"⏱ ":"TIME LEFT ")+h+"h "+mn+"m";
+}
 function renderTopbar(){
  if(S.srv){ var _sN=Math.max(1,S.srv.partidos_ronda||1),_sP=S.srv.partido||1,_sR=rondaLabel(S.srv.ronda); $("#tbPhase").textContent=_sR; $("#tbFill").style.width=(Math.min(_sN,_sP)/_sN*100)+"%"; $("#tbProg").textContent="🏆 "+_sR+" · "+(LANG==="es"?"Partido ":"Match ")+_sP+"/"+_sN; } else { $("#tbPhase").textContent=roundNameFor(S.bracket?S.bracket.teams.length:16)[LANG].toUpperCase();
  $("#tbFill").style.width=(function(){var b=S.bracket,N=Math.max(1,(b?b.teams.length:16)/2);return (Math.min(N,b?b.pos:0)/N*100);})()+"%";
  $("#tbProg").textContent=(function(){var b=S.bracket,n=(b?b.teams.length:16),N=Math.max(1,n/2),pos=(b?b.pos:0),rn=roundNameFor(n);return "🏆 "+rn[LANG].toUpperCase()+" · "+(LANG==="es"?"Partido ":"Match ")+Math.min(N,pos+1)+"/"+N;})(); }
- $("#creds").textContent=i18n('hype')+" "+((S.srv&&S.srv.volumen)||0).toFixed(1)+"◎";
+ $("#creds").textContent=credsText();
  $("#marq").textContent=S.headlines[0];
 }
 /* ====================================================== PANEL AUTO-ROTATIVO (estado real del torneo, data del server) */
 let rotIdx=0, rotTimer=null;
 function phaseLine(){
- var s=S.srv; if(!s) return (LANG==="es"?"CONECTANDO…":"CONNECTING…");
+ var s=S.srv; if(!s) return (LANG==="es"?"CONECTANDO…":"CONNECTING…"); if(s.fase==="pre"||s.started===false) return (LANG==="es"?"EL MUNDIAL ESTÁ POR EMPEZAR":"WORLD CUP STARTING SOON");
  if(s.fase==="grupos") return (LANG==="es"?"FASE DE GRUPOS":"GROUP STAGE")+" · "+(LANG==="es"?"Fecha ":"MD ")+(s.fecha!=null?s.fecha:"-")+" · "+(LANG==="es"?"Grupo ":"Group ")+(s.grupo!=null?s.grupo:"-");
  return (s.ronda||"").toUpperCase()+" · "+(LANG==="es"?"Partido ":"Match ")+(s.partido||1)+"/"+(s.partidos_ronda||1);
 }
@@ -844,8 +858,9 @@ function awayKit(homeHex, awayHex){
   return _lum(h)>140 ? "#15151f" : "#eaeaea";     // chocan: oscuro si local claro, claro si local oscuro
 }
 function meterRowHTML(m){
- return '<div class="meter-row"><span class="ml">'+m.home.short+'</span>'+meterHTML(m.atkH,m.home.color)+'<span class="mp">'+Math.round(m.atkH)+'%</span></div>'
-   +'<div class="meter-row"><span class="ml">'+m.away.short+'</span>'+meterHTML(m.atkA,awayKit(m.home.color,m.away.color))+'<span class="mp">'+Math.round(m.atkA)+'%</span></div>';
+ var ph=Math.round(S.poss==null?50:S.poss), pa=100-ph;   // posesión decorativa (las compras ya no afectan)
+ return '<div class="meter-row"><span class="ml">'+m.home.short+'</span>'+meterHTML(ph,m.home.color)+'<span class="mp">'+ph+'%</span></div>'
+   +'<div class="meter-row"><span class="ml">'+m.away.short+'</span>'+meterHTML(pa,awayKit(m.home.color,m.away.color))+'<span class="mp">'+pa+'%</span></div>';
 }
 function playsHTML(m){
  if(m.events.length===0) return '<div class="hint">'+i18n('waitingPlays')+'</div>';
@@ -859,7 +874,7 @@ function renderHud(){
  h+='<div class="hud-team" id="lvAway">'+flagHTML(m.away,28)+'<span class="nm">'+m.away.name.toUpperCase()+'</span></div>';
  h+='</div>';
  h+='<div class="hud-sc"><span class="sc" id="lvSc">'+m.sh+' : '+m.sa+'</span><span class="mn" id="lvMin">'+m.min+"'</span></div>";
- h+='<div id="lvMeters">'+meterRowHTML(m)+'</div>';
+ h+='<div class="hud-poss">'+(LANG==="es"?"POSESIÓN":"POSSESSION")+'</div><div id="lvMeters">'+meterRowHTML(m)+'</div>';
  el.innerHTML=h;
  updateLive._h=m.home.short; updateLive._a=m.away.short;
 }
@@ -872,6 +887,7 @@ function renderLive(){
 }
 function updateLive(){
  const sc=$("#lvSc"); if(!sc) return; const m=S.match;
+ S.poss=Math.max(33,Math.min(67,(S.poss==null?50:S.poss)+(Math.random()*2-1)*5));
  var _ph=$("#lvPhase"); if(_ph) _ph.textContent=phaseLine();
  if(updateLive._h!==m.home.short){ $("#lvHome").innerHTML=flagHTML(m.home,28)+'<span class="nm">'+m.home.name.toUpperCase()+'</span>'; updateLive._h=m.home.short; }
  if(updateLive._a!==m.away.short){ $("#lvAway").innerHTML=flagHTML(m.away,28)+'<span class="nm">'+m.away.name.toUpperCase()+'</span>'; updateLive._a=m.away.short; }
@@ -1166,7 +1182,26 @@ function chainByShort(sh){ var i=SHORT2I[sh]; return (i==null)?null:chain(i); }
 function applyBracket(b){ S.srvBracket=b; try{ renderRotPanel(); }catch(e){} }
 var BACKEND_WS="wss://rug-world-cup-backend.onrender.com/ws";
 var srvWS=null, srvTries=0;
-var rwcPause=(function(){ try{ var d=document.createElement("div"); d.id="rwcPause"; d.style.cssText="position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:60;background:rgba(7,11,18,.82);color:#ffb02e;font-family:monospace;font-size:14px;letter-spacing:1px;padding:5px 12px;border:1px solid rgba(255,176,46,.5);border-radius:4px;display:none;pointer-events:none"; d.textContent="esperando compras..."; (document.getElementById("wrap")||document.body).appendChild(d); return d; }catch(e){ return null; } })();
+var rwcPause=(function(){ try{ var d=document.createElement("div"); d.id="rwcPause"; d.className="rwcov"; d.style.display="none"; (document.getElementById("wrap")||document.body).appendChild(d); return d; }catch(e){ return null; } })();
+/* overlay central sobre el estadio: PRE-PARTIDO / PENALES / CAMPEÓN */
+function setRwcOverlay(s){
+ if(!rwcPause) return;
+ var d=rwcPause;
+ if(s.campeon){ var c=chainByShort(s.campeon);
+   d.className="rwcov champ";
+   d.innerHTML='<div class="ov-t">🏆 '+(LANG==="es"?"CAMPEÓN":"CHAMPION")+'</div><div class="ov-c">'+esc(c?c.name:s.campeon)+'</div>'+(s.tercero?'<div class="ov-s">🥉 '+(LANG==="es"?"3er puesto: ":"3rd place: ")+esc(s.tercero)+'</div>':'');
+   d.style.display="block";
+ } else if(s.started===false){
+   d.className="rwcov pre";
+   d.innerHTML='<div class="ov-t">'+(LANG==="es"?"EL MUNDIAL ESTÁ POR EMPEZAR":"WORLD CUP STARTING SOON")+'</div><div class="ov-s">'+(LANG==="es"?"48 chains · 72 horas · una las ruguea a todas":"48 chains · 72 hours · one rugs them all")+'</div>';
+   d.style.display="block";
+ } else if(s.penales){
+   var hh=(S.match&&S.match.home)?S.match.home.short:s.local.short, aa=(S.match&&S.match.away)?S.match.away.short:s.visita.short;
+   d.className="rwcov pen";
+   d.innerHTML='<div class="ov-t">⚽ '+(LANG==="es"?"PENALES":"PENALTY SHOOTOUT")+'</div><div class="ov-s">'+esc(hh)+' '+s.local.goles+' - '+s.visita.goles+' '+esc(aa)+'</div>';
+   d.style.display="block";
+ } else { d.style.display="none"; }
+}
 function applyState(s){
  var ai=SHORT2I[s.local.short], bi=SHORT2I[s.visita.short];
  if(ai==null||bi==null) return;
@@ -1177,13 +1212,15 @@ function applyState(s){
  m.home=chain(ai); m.away=chain(bi); m.ai=ai; m.bi=bi;
  m.sh=s.local.goles; m.sa=s.visita.goles; m.min=s.minuto;
  m.atkH=s.local.atk||0; m.atkA=s.visita.atk||0;
- S.srv={fase:s.fase,ronda:s.ronda,ronda_size:s.ronda_size,fecha:s.fecha,grupo:s.grupo,partido:s.partido,partidos_ronda:s.partidos_ronda,activo:s.activo,volumen:s.volumen,campeon:s.campeon,tercero:s.tercero};
+ S.srv={fase:s.fase,ronda:s.ronda,ronda_size:s.ronda_size,fecha:s.fecha,grupo:s.grupo,partido:s.partido,partidos_ronda:s.partidos_ronda,activo:s.activo,volumen:s.volumen,started:s.started,remaining:s.remaining,penales:s.penales,campeon:s.campeon,tercero:s.tercero};
  if(S._lastRonda && S._lastRonda!==s.ronda && !s.campeon){ try{ pushChat(i18n('tournament'),"🔓 "+(s.ronda||"").toUpperCase(), "#ffb02e"); }catch(e){} }
  S._lastRonda=s.ronda;
- window.RWC_VE=(s.energia||0)/100; window.RWC_VA=!!s.activo;
- if(rwcPause){ rwcPause.style.display=s.activo?"none":"block"; if(!s.activo) rwcPause.textContent=(LANG==="es"?"esperando compras...":"waiting for buys..."); }
- if(s.activo && window.SC){ var _nb=Math.min(5,s.buys||0); for(var _i=0;_i<_nb;_i++){ var _side=(Math.random()<0.5)?"home":"away"; var _sol=(_i===0&&s.sol_max)?s.sol_max:(0.2+Math.random()*Math.random()*1.6); try{ SC.onBuy(_side,_sol); }catch(e){} } }
+ window.RWC_VE=(s.energia||0)/100; window.RWC_VA=true;
+ if(newKey!==prevKey) S.poss=45+Math.random()*10;   // posesión decorativa, nueva por partido
+ if(s.penales && !S._lastPenales){ try{ sfx("whistle"); }catch(e){} if(!REDUCE){ try{ flashScreen("rgba(255,77,77,.28)"); shake("s"); }catch(e){} } }
+ S._lastPenales=!!s.penales;
  if(s.campeon){ if(S._lastChamp!==s.campeon){ S._lastChamp=s.campeon; var ci=SHORT2I[s.campeon]; if(ci!=null){ try{ championFX(chain(ci)); }catch(e){} } } } else { S._lastChamp=null; }
+ try{ setRwcOverlay(s); }catch(e){}
  try{ renderTopbar(); }catch(e){}
  try{ updateLive(); }catch(e){}
  try{ renderRotPanel(); }catch(e){}
@@ -1192,7 +1229,7 @@ function connectBackend(){
  if(typeof WebSocket==="undefined") return;
  try{ srvWS=new WebSocket(BACKEND_WS); }catch(e){ srvTries++; setTimeout(connectBackend, Math.min(8000,1000*srvTries)); return; }
  srvWS.onopen=function(){ srvTries=0; try{ setFeedState("live"); }catch(e){} };
- srvWS.onmessage=function(ev){ var s; try{ s=JSON.parse(ev.data); }catch(e){ return; } if(!s||!s.type) return; if(s.type==="state") applyState(s); else if(s.type==="bracket") applyBracket(s); else if(s.type==="groups") applyGroups(s); else if(s.type==="buy") pushServerBuy(s); };
+ srvWS.onmessage=function(ev){ var s; try{ s=JSON.parse(ev.data); }catch(e){ return; } if(!s||!s.type) return; if(s.type==="state") applyState(s); else if(s.type==="bracket") applyBracket(s); else if(s.type==="groups") applyGroups(s); };
  srvWS.onclose=function(){ try{ setFeedState("reconnecting"); }catch(e){} srvTries++; setTimeout(connectBackend, Math.min(8000,1000*srvTries)); };
  srvWS.onerror=function(){ try{ srvWS.close(); }catch(e){} };
 }
@@ -1275,10 +1312,10 @@ function drawBoard(ctx,W,H,fontReady){
  ctx.fillStyle="#fffdf5"; ctx.font=Math.round(H*0.034)+"px "+F;
  ctx.fillText(m.home.name.toUpperCase().slice(0,11),W*0.16,fy+fh+H*0.05);
  ctx.fillText(m.away.name.toUpperCase().slice(0,11),W*0.84,fy+fh+H*0.05);
- ctx.fillStyle="#ffb02e"; ctx.font=Math.round(H*0.03)+"px "+F; ctx.textAlign="left"; ctx.fillText("ATK",W*0.06,H*0.7);
- drawMeterB(ctx,W*0.14,H*0.675,W*0.26,H*0.045,m.atkH,m.home.color);
- ctx.textAlign="right"; ctx.fillText("ATK",W*0.94,H*0.7); ctx.textAlign="left";
- drawMeterB(ctx,W*0.6,H*0.675,W*0.26,H*0.045,m.atkA,m.away.color);
+ ctx.fillStyle="#ffb02e"; ctx.font=Math.round(H*0.03)+"px "+F; ctx.textAlign="left"; ctx.fillText("POS",W*0.06,H*0.7);
+ drawMeterB(ctx,W*0.14,H*0.675,W*0.26,H*0.045,(S.poss==null?50:S.poss),m.home.color);
+ ctx.textAlign="right"; ctx.fillText("POS",W*0.94,H*0.7); ctx.textAlign="left";
+ drawMeterB(ctx,W*0.6,H*0.675,W*0.26,H*0.045,(S.poss==null?50:100-S.poss),m.away.color);
  ctx.textAlign="center";
  if(m.events[0]){ const e=m.events[0]; ctx.fillStyle=e.color; ctx.font=Math.round(H*0.04)+"px "+F; ctx.fillText((e.label?e.label[LANG]:e.type)+" — "+e.team.toUpperCase().slice(0,12),W/2,H*0.85); }
  if(Math.floor(Date.now()/600)%2===0){ ctx.fillStyle="#ff4d4d"; ctx.font=Math.round(H*0.032)+"px "+F; ctx.fillText((LANG==="es"?"● EN VIVO":"● LIVE"),W/2,H*0.94); }
@@ -1577,7 +1614,7 @@ renderTopbar();
 $("#marq").textContent=S.headlines[0];
 applyLang();
 init3D();
-connectFeed();
+/* PumpPortal retirado: el torneo ya no depende de compras del token */
 </script>
 </body>
 </html>
