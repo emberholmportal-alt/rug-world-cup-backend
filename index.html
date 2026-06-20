@@ -1228,19 +1228,27 @@ function setRwcOverlay(s){
 /* ===== drivers de ambiente del cliente (todo decorativo, NO toca resultados) ===== */
 function ambienteActivo(){ var s=S.srv; return !!(S.started && s && s.started && !s.penales && !s.campeon); }
 var _ambTimer=null;
+var _lastSpecialAmb=0;
 function startAmbiente(){
  if(_ambTimer) return;
  _ambTimer=setInterval(function(){
   if(!ambienteActivo()) return;
-  var r=Math.random();
-  if(r<0.55){
+  var now=Date.now(), r=Math.random();
+  // JUGADA ESPECIAL: personaje con foto grande + frase/lore (cooldown propio para que no se encime)
+  if(r<0.32 && now-_lastSpecialAmb>10000){
+   _lastSpecialAmb=now;
+   try{ specialPlay(Math.random()<0.45?pick(PERSONAS):pick(MASCOTAS), i18n('specialPlay')); }catch(e){}
+  } else if(r<0.64){
+   // evento genérico (cartelón): VAR / tarjeta / corrupción / sponsor / lesión / rug
    var tipo=pick(["VAR","AMARILLA","AMARILLA","ROJA","CORRUPCION","SPONSOR","LESION","RUG"]);
    if(tipo==="VAR"){ try{ varOverlay(); }catch(e){} }
    else { var team=(Math.random()<0.5)?(S.match&&S.match.home):(S.match&&S.match.away);
-     try{ fxFor(tipo,team); }catch(e){}                 // presentación pura (cartelón + flash/shake)
-     try{ if(window.SC) SC.onEvent(tipo); }catch(e){} }  // memes 3D temáticos
-  } else if(r<0.75){ try{ if(window.SC&&SC.sub) SC.sub(pick(["ritmo","ritmo","gol"])); }catch(e){} }
-  try{ if(window.SC&&SC.bump) SC.bump(); }catch(e){}      // bump de energía para que el ritmo "ondee"
+     try{ fxFor(tipo,team); }catch(e){}
+     try{ if(window.SC) SC.onEvent(tipo); }catch(e){} }
+  } else if(r<0.82){
+   try{ if(window.SC&&SC.sub) SC.sub(pick(["ritmo","ritmo","gol"])); }catch(e){}
+  }
+  try{ if(window.SC&&SC.bump) SC.bump(); }catch(e){}
  }, 3500);
 }
 /* rotador del panel derecho: muestra una .ab-card a la vez, completa (no se corta) */
