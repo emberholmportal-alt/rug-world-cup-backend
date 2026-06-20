@@ -32,11 +32,11 @@ b{ font-weight:400; }
 /* CRT overlay sobre TODO */
 #subboard{ position:fixed; top:140px; left:50%; transform:translateX(-50%); z-index:46; display:none; align-items:center; gap:20px; padding:16px 26px; background:linear-gradient(180deg,#0a0e16,#05080e); border:2px solid var(--amber); border-radius:8px; box-shadow:0 0 0 2px #000,0 6px 22px rgba(0,0,0,.6); }
 #subboard.show{ display:flex; animation:subin .35s ease; }
-#subboard .sb-l{ font-family:'Press Start 2P'; font-size:13px; color:var(--amber); }
-#subboard .sb-out, #subboard .sb-in{ display:flex; flex-direction:column; align-items:center; gap:6px; font-family:'Press Start 2P'; font-size:11px; }
+#subboard .sb-l{ font-family:'Press Start 2P'; font-size:15px; color:var(--amber); }
+#subboard .sb-out, #subboard .sb-in{ display:flex; flex-direction:column; align-items:center; gap:7px; font-family:'Press Start 2P'; font-size:13px; }
 #subboard .sb-out{ color:var(--red); }
 #subboard .sb-in{ color:var(--green); }
-#subboard .sb-out img, #subboard .sb-in img{ width:78px; height:78px; object-fit:cover; border-radius:6px; background:#05080e; image-rendering:pixelated; }
+#subboard .sb-out img, #subboard .sb-in img{ width:112px; height:112px; object-fit:cover; border-radius:6px; background:#05080e; image-rendering:pixelated; }
 #subboard .sb-out img{ border:2px solid var(--red); }
 #subboard .sb-in img{ border:2px solid var(--green); }
 @keyframes subin{ from{opacity:0; transform:translateX(-50%) translateY(-8px);} to{opacity:1; transform:translateX(-50%) translateY(0);} }
@@ -481,7 +481,7 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
     </div>
     <div class="ab-card">
       <div class="ab-h" data-i18n="howTitle">⚙ ¿CÓMO FUNCIONA?</div>
-      <div class="ab-proj" data-i18n-html="projHow"><p><span class="k">104 partidos</span> repartidos en 72hs. Los resultados se <span class="k">sortean al azar en el momento</span> que se juega cada partido — nadie sabe quién gana hasta que pasa. El reloj lo maneja el <span class="k">tiempo</span>, no las compras.</p><p><b>Sin empates:</b> ningún partido termina empatado; si hay igualdad se define por <span class="k">PENALES</span>.</p></div>
+      <div class="ab-proj" data-i18n-html="projHow"><p><span class="k">104 partidos</span> repartidos en 72hs. Los resultados se <span class="k">sortean al azar en el momento</span> que se juega cada partido — nadie sabe quién gana hasta que pasa. El reloj lo maneja el <span class="k">tiempo</span>, no las compras.</p><p><b>Empates:</b> en grupos puede haber empate (1 punto cada uno). En eliminatorias no hay empate: si están iguales, <span class="k">PENALES</span>.</p></div>
     </div>
     <div class="ab-card">
       <div class="ab-h" data-i18n="fmtTitle">🏆 EL FORMATO</div>
@@ -616,7 +616,7 @@ const TR={
    howTitle:"⚙ HOW IT WORKS",
    fmtTitle:"🏆 THE FORMAT",
    projIntro:"<p>48 blockchains compete in the most corrupt tournament on the internet for the <span class='k'>Golden Rug</span>. The championship <span class='k'>runs on its own for 72 hours</span>, around the clock, until one chain rugs them all.</p>",
-   projHow:"<p><span class='k'>104 matches</span> across 72 hours. Results are <span class='k'>drawn at random the moment</span> each match is played — nobody knows who wins until it happens. The clock is driven by <span class='k'>time</span>, not by buys.</p><p><b>No draws:</b> no match ends in a tie; if it's level it's settled on <span class='k'>PENALTIES</span>.</p>",
+   projHow:"<p><span class='k'>104 matches</span> across 72 hours. Results are <span class='k'>drawn at random the moment</span> each match is played — nobody knows who wins until it happens. The clock is driven by <span class='k'>time</span>, not by buys.</p><p><b>Draws:</b> group matches can end level (1 point each). In the knockouts there are no draws — if it's level, <span class='k'>PENALTIES</span>.</p>",
    projFormat:"<p>Group stage → Round of 32 → Round of 16 → Quarters → Semis → Final → Champion. The tournament kicks off and plays itself from start to finish.</p><p class='disc'>100% satire. Parody project, not affiliated with FIFA or the chains mentioned. <span class='k'>Token buys do NOT affect the tournament.</span> CA: paste-your-contract-address · X / Telegram.</p>",
    prizeTitle:"🏆 HOLDER PRIZE",
    prizeBody:"25% of the dev's first $RUGWC buy, raffled to holders when the tournament ends. Enter: follow @RUGWORLDCUP · repost the pinned post · hold ≥ [X] $RUGWC (≈$15). 1 entry per [X] held — hold more, win more. Random surprise snapshots; hold the minimum at every one. Dev does NOT sell — wallet public on <a class='prize-solscan' href='#' target='_blank' rel='noopener'>Solscan</a>. Winner proven on-chain. Satire · extreme risk · not financial advice.",
@@ -648,7 +648,7 @@ const TR={
    howTitle:"⚙ ¿CÓMO FUNCIONA?",
    fmtTitle:"🏆 EL FORMATO",
    projIntro:"<p>48 blockchains compiten en el torneo más corrupto de internet por el <span class='k'>Golden Rug</span>. El campeonato <span class='k'>corre solo durante 72 horas</span>, las 24hs, hasta que una cadena las ruguea a todas.</p>",
-   projHow:"<p><span class='k'>104 partidos</span> repartidos en 72hs. Los resultados se <span class='k'>sortean al azar en el momento</span> que se juega cada partido — nadie sabe quién gana hasta que pasa. El reloj lo maneja el <span class='k'>tiempo</span>, no las compras.</p><p><b>Sin empates:</b> ningún partido termina empatado; si hay igualdad se define por <span class='k'>PENALES</span>.</p>",
+   projHow:"<p><span class='k'>104 partidos</span> repartidos en 72hs. Los resultados se <span class='k'>sortean al azar en el momento</span> que se juega cada partido — nadie sabe quién gana hasta que pasa. El reloj lo maneja el <span class='k'>tiempo</span>, no las compras.</p><p><b>Empates:</b> en grupos puede haber empate (1 punto cada uno). En eliminatorias no hay empate: si están iguales, <span class='k'>PENALES</span>.</p>",
    projFormat:"<p>Fase de grupos → 16avos → Octavos → Cuartos → Semis → Final → Campeón. El torneo arranca y se juega solo de principio a fin.</p><p class='disc'>100% sátira. Proyecto de parodia, no afiliado a FIFA ni a las cadenas mencionadas. <span class='k'>Las compras del token NO afectan el torneo.</span> CA: paste-your-contract-address · X / Telegram.</p>",
    prizeTitle:"🏆 PREMIO HOLDERS",
    prizeBody:"25% de la primera compra del dev en $RUGWC, sorteado entre holders al terminar el torneo. Entrás: seguí a @RUGWORLDCUP · reposteá el post fijado · holdeá ≥ [X] $RUGWC (≈USD 15). 1 entrada cada [X] — más holdeás, más chances. Snapshots sorpresa al azar; cumplí el mínimo en todos. El dev NO vende — wallet pública en <a class='prize-solscan' href='#' target='_blank' rel='noopener'>Solscan</a>. Ganador con prueba on-chain. Sátira · riesgo extremo · no es asesoramiento financiero.",
@@ -1156,6 +1156,7 @@ const MASCOTAS=[
  {k:"coq", e:"🐔", t:{es:["el gallo Coq canta el gol","Coq despierta a todo el estadio","kikirikí, gol del gallo"],en:["the Coq rooster crows the goal","Coq wakes the whole stadium","cock-a-doodle-doo, rooster goal"]}},
 ];
 const ALL_MASCOTS=["@pepe","@doge","@shib","@bonk","@wif","@floki","@brett","@mog","@popcat","@andy","@turbo","@mew","@babydoge","@michi","@coq","@myro","@samo","@akita","@kishu","@ladys","@toshi","@wen","@spx","@hoppy","@dawg"];
+const ALL_PERSONAS=PERSONAS.map(function(p){return "@"+p.k;});
 let buysSinceSpecial=0, nextSpecialAt=4+rint(5), lastSpecialAt=0;
 function maybeSpecialPlay(sol){
  const now=Date.now(); buysSinceSpecial++;
@@ -1493,7 +1494,7 @@ function init3D(){
  function faceImgSrc(tok){ try{ const k=tok[0]==="@"?tok.slice(1):tok; if(tok[0]==="@" && typeof MEME_IMG!=="undefined" && MEME_IMG[k]) return MEME_IMG[k]; const tex=memeTex(tok); const im=tex&&tex.image; if(im){ if(im.toDataURL) return im.toDataURL(); if(im.src) return im.src; } }catch(e){} return ""; }
  function showSubBoard(outTok,inTok){ const b=document.getElementById("subboard"); if(!b) return; const oi=faceImgSrc(outTok),ii=faceImgSrc(inTok); b.innerHTML='<span class="sb-l">'+i18n('subSwap')+'</span><span class="sb-out"><img src="'+oi+'" alt=""><b>'+i18n('subOut')+'</b></span><span class="sb-in"><img src="'+ii+'" alt=""><b>'+i18n('subIn')+'</b></span>'; b.classList.add("show"); clearTimeout(showSubBoard._t); showSubBoard._t=setTimeout(()=>b.classList.remove("show"),3800); }
  const SUB_LINES={ es:{ gol:["entra sangre nueva 🔥","cambio para festejar el gol","piernas frescas tras el gol"], compra:["el DT mete un crack 💎","entra figura por la ballena","refuerzo de mercado 🚀"], rug:["🪤 lo ruggearon, sale del campo","cambio forzado, se fue rugueado","afuera el rugueado, entra otro"], ritmo:["cambio táctico del DT","rota el equipo","pierna cansada afuera"] }, en:{ gol:["fresh legs coming on 🔥","sub to celebrate the goal","new blood after the goal"], compra:["coach brings on a star 💎","signing in for the whale","market reinforcement 🚀"], rug:["🪤 he got rugged, off he goes","forced sub, walked off rugged","the rugged one is out"], ritmo:["tactical sub by the coach","rotating the squad","tired legs off"] } };
- function triggerSub(reason){ if(cine) return; const now=performance.now()/1000; if(now-lastSubT<9) return; const cand=players.filter(x=>!x.subPhase); if(!cand.length) return; const p=cand[rint(cand.length)]; lastSubT=now; p.subToken=nextFace(); p.subPhase=1; sfx("whistle"); const side=p.g.position.x>=0?1:-1; p.subTarget={x:side*7.0,z:1.6+Math.random()*1.0}; startCine({p:p,t:3.8,dur:3.8}); try{ const arr=(SUB_LINES[LANG]||SUB_LINES.en)[reason]||(SUB_LINES[LANG]||SUB_LINES.en).ritmo; pushChat(i18n('coach'),pick(arr),"#ffb02e"); }catch(e){} }
+ function triggerSub(reason){ if(cine) return; const now=performance.now()/1000; if(now-lastSubT<28) return; const cand=players.filter(x=>!x.subPhase); if(!cand.length) return; const p=cand[rint(cand.length)]; lastSubT=now; p.subToken=nextFace(); try{ showSubBoard(p.faceToken, p.subToken); }catch(e){} p.subPhase=1; sfx("whistle"); const side=p.g.position.x>=0?1:-1; p.subTarget={x:side*7.0,z:1.6+Math.random()*1.0}; startCine({p:p,t:3.8,dur:3.8}); try{ const arr=(SUB_LINES[LANG]||SUB_LINES.en)[reason]||(SUB_LINES[LANG]||SUB_LINES.en).ritmo; pushChat(i18n('coach'),pick(arr),"#ffb02e"); }catch(e){} }
  function subStep(p,dt){ const tx=p.subTarget.x,tz=p.subTarget.z; const dx=tx-p.g.position.x,dz=tz-p.g.position.z; const d=Math.hypot(dx,dz); if(d>0.14){ const sp=Math.min(d,2.8)*dt*1.35; p.g.position.x+=dx/d*sp; p.g.position.z+=dz/d*sp; p.g.rotation.y=Math.atan2(dx,dz); p.phase+=dt*13; const s=Math.sin(p.phase)*0.62; p.legL.rotation.x=s; p.legR.rotation.x=-s; p.armL.rotation.x=-s*0.7; p.armR.rotation.x=s*0.7; p.g.position.y=Math.abs(Math.sin(p.phase))*0.045; } else { if(p.subPhase===1){ p.faceToken=p.subToken; if(p.face){ p.face.material.map=memeTex(p.faceToken); p.face.material.needsUpdate=true; } p.subPhase=2; p.subTarget={x:Math.max(-6,Math.min(6,p.biasX)),z:(Math.random()*4-2)-1}; } else { p.subPhase=0; p.g.position.y=0; } } }
  // ===================== ARCOS / REDES
  function makeGoal(gx,faceDir){
@@ -1666,7 +1667,7 @@ function init3D(){
   // FUEGOS
   for(let i=fwActive.length-1;i>=0;i--){ const f=fwActive[i]; f.life-=dt; if(f.life<=0){ scene.remove(f.pts); f.pts.geometry.dispose(); f.pts.material.dispose(); fwActive.splice(i,1); continue; } const pa=f.pts.geometry.attributes.position.array; for(let j=0;j<f.vel.length;j++){ f.vel[j][1]-=4.5*dt; pa[j*3]+=f.vel[j][0]*dt; pa[j*3+1]+=f.vel[j][1]*dt; pa[j*3+2]+=f.vel[j][2]*dt; } f.pts.geometry.attributes.position.needsUpdate=true; f.pts.material.opacity=f.life/f.max; }
   // memes ambientales ocasionales (mascotas memecoin + caras retro)
-  if(Math.random()<dt*(0.10+E*0.5)) spawnMeme(pick(ALL_MASCOTS.concat(["@troll","@megusta","@pokerface","@gigachad","🚀","💎","🐸","🐕","🤑","🐶"])),Math.random()*12-6,0.7+Math.random(),Math.random()*7-4,(Math.random()-0.5)*0.6,1.0+Math.random()*0.6,(Math.random()-0.5)*0.4,0.95+Math.random()*0.55,2.3);
+  if(Math.random()<dt*(0.10+E*0.5)) spawnMeme(pick(ALL_MASCOTS.concat(ALL_PERSONAS).concat(["@troll","@megusta","@pokerface","@gigachad","🚀","💎","🐸","🐕"])),Math.random()*12-6,0.7+Math.random(),Math.random()*7-4,(Math.random()-0.5)*0.6,1.0+Math.random()*0.6,(Math.random()-0.5)*0.4,0.95+Math.random()*0.55,2.3);
   /* cambios desactivados: los modelos 3D solo hacen goles visuales reales */
   // LUCES
   ambient.intensity=0.42+E*0.5;
