@@ -299,19 +299,20 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
 .ab-card{ background:var(--panel); backdrop-filter:blur(3px); border:3px solid var(--line); padding:10px 12px; }
 .ab-prize{ flex:none; }
 .ab-prize .ab-h{ color:var(--amber-l); }
-.ab-prize-p{ font-size:12px; line-height:1.34; color:var(--txt); margin:0; }
+.ab-prize-p{ font-size:15px; line-height:1.46; color:var(--txt); margin:0; }
 .leftbuys{ flex:none; }
 .leftbuys .ab-h{ margin-bottom:6px; }
 .leftbuys .ab-buys{ max-height:168px; }
 .prize-solscan{ color:var(--cyan); text-decoration:underline; }
-.ab-h{ font-family:'Press Start 2P'; font-size:10px; color:var(--amber); margin-bottom:7px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.ab-h{ font-family:'Press Start 2P'; font-size:11px; color:var(--amber); margin-bottom:8px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 .ab-p{ font-size:14px; line-height:1.35; color:var(--txt); margin:0 0 6px; }
 .ab-p b{ color:var(--amber-l); }
-.ab-proj{ font-size:13px; line-height:1.4; color:var(--txt); }
-.ab-proj p{ margin:0 0 7px; }
-.ab-proj h4{ font-family:'Press Start 2P'; font-size:8px; color:var(--amber); margin:9px 0 4px; letter-spacing:.5px; }
+.ab-proj{ font-size:15px; line-height:1.46; color:var(--txt); }
+.ab-proj p{ margin:0 0 8px; }
+.ab-proj h4{ font-family:'Press Start 2P'; font-size:9px; color:var(--amber); margin:9px 0 4px; letter-spacing:.5px; }
 .ab-proj .k{ color:var(--amber-l); font-weight:bold; }
-.ab-proj .disc{ font-size:11px; color:var(--mut); margin-top:9px; }
+.ab-proj b{ color:var(--amber-l); }
+.ab-proj .disc{ font-size:13px; color:var(--mut); margin-top:9px; }
 .hud-poss{ font-family:'Press Start 2P'; font-size:7px; color:var(--mut); text-align:center; margin:3px 0 1px; }
 #rwcPause.rwcov{ position:fixed; top:42%; left:50%; transform:translate(-50%,-50%); z-index:60; text-align:center; pointer-events:none; background:rgba(7,11,18,.8); border:2px solid rgba(255,176,46,.55); border-radius:10px; padding:18px 30px; backdrop-filter:blur(3px); max-width:70vw; }
 #rwcPause .ov-t{ font-family:'Press Start 2P'; font-size:18px; color:var(--amber); line-height:1.5; text-shadow:0 0 14px rgba(255,176,46,.6); }
@@ -475,8 +476,16 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
   <aside id="about">
     <div class="ab-card">
       <div class="ab-h" data-i18n="projTitle">🪤 EL PROYECTO</div>
-      <div class="ab-proj" data-i18n-html="projBody"><p>48 blockchains compiten en el torneo más corrupto de internet por el <span class="k">Golden Rug</span>. El campeonato <span class="k">corre solo durante 72 horas</span>, las 24hs, hasta que una cadena las ruguea a todas.</p><h4>¿CÓMO FUNCIONA?</h4><p><span class="k">104 partidos</span> repartidos en 72hs. Los resultados se <span class="k">sortean al azar en el momento</span> que se juega cada partido — nadie sabe quién gana hasta que pasa. El reloj lo maneja el <span class="k">tiempo</span>, no las compras.</p><h4>SIN EMPATES</h4><p>Ningún partido termina empatado. Si hay empate, se define por <span class="k">PENALES</span>.</p><h4>EL FORMATO</h4><p>Fase de grupos → 16avos → Octavos → Cuartos → Semis → Final → Campeón. El torneo arranca y se juega solo de principio a fin.</p><p class="disc">100% sátira. Proyecto de parodia, no afiliado a FIFA ni a ninguna de las cadenas mencionadas. <span class="k">Las compras del token NO afectan el torneo.</span> CA: paste-your-contract-address · X / Telegram. 48 chains enter. One chain rugs them all. 🪤</p></div>
+      <div class="ab-proj" data-i18n-html="projIntro"><p>48 blockchains compiten en el torneo más corrupto de internet por el <span class="k">Golden Rug</span>. El campeonato <span class="k">corre solo durante 72 horas</span>, las 24hs, hasta que una cadena las ruguea a todas.</p></div>
       <div class="ab-tags"><span>48 CHAINS</span><span>$RUGWC</span><span>pump.fun</span><span>SOLANA</span><span data-i18n="satire">100% SÁTIRA</span></div>
+    </div>
+    <div class="ab-card">
+      <div class="ab-h" data-i18n="howTitle">⚙ ¿CÓMO FUNCIONA?</div>
+      <div class="ab-proj" data-i18n-html="projHow"><p><span class="k">104 partidos</span> repartidos en 72hs. Los resultados se <span class="k">sortean al azar en el momento</span> que se juega cada partido — nadie sabe quién gana hasta que pasa. El reloj lo maneja el <span class="k">tiempo</span>, no las compras.</p><p><b>Sin empates:</b> ningún partido termina empatado; si hay igualdad se define por <span class="k">PENALES</span>.</p></div>
+    </div>
+    <div class="ab-card">
+      <div class="ab-h" data-i18n="fmtTitle">🏆 EL FORMATO</div>
+      <div class="ab-proj" data-i18n-html="projFormat"><p>Fase de grupos → 16avos → Octavos → Cuartos → Semis → Final → Campeón. El torneo arranca y se juega solo de principio a fin.</p><p class="disc">100% sátira. Proyecto de parodia, no afiliado a FIFA ni a las cadenas mencionadas. <span class="k">Las compras del token NO afectan el torneo.</span> CA: paste-your-contract-address · X / Telegram.</p></div>
     </div>
     <div class="ab-card ab-prize">
       <div class="ab-h" data-i18n="prizeTitle">🏆 PREMIO HOLDERS</div>
@@ -604,7 +613,11 @@ const TR={
    varReview:"⏸ VAR REVIEW", btnBuy:"● SIMULATE BUY", btnAuto:"▶ AUTO", btnStop:"■ STOP",
    finalTie:" (hype decides)",
    projTitle:"🪤 THE PROJECT",
-   projBody:"<p>48 blockchains compete in the most corrupt tournament on the internet for the <span class='k'>Golden Rug</span>. The championship <span class='k'>runs on its own for 72 hours</span>, around the clock, until one chain rugs them all.</p><h4>HOW IT WORKS</h4><p><span class='k'>104 matches</span> across 72 hours. Results are <span class='k'>drawn at random the moment</span> each match is played — nobody knows who wins until it happens. The clock is driven by <span class='k'>time</span>, not by buys.</p><h4>NO DRAWS</h4><p>No match ends in a tie. If it's level, it's settled on <span class='k'>PENALTIES</span>.</p><h4>THE FORMAT</h4><p>Group stage → Round of 32 → Round of 16 → Quarters → Semis → Final → Champion. The tournament kicks off and plays itself from start to finish.</p><p class='disc'>100% satire. Parody project, not affiliated with FIFA or any of the chains mentioned. <span class='k'>Token buys do NOT affect the tournament.</span> CA: paste-your-contract-address · X / Telegram. 48 chains enter. One chain rugs them all. 🪤</p>",
+   howTitle:"⚙ HOW IT WORKS",
+   fmtTitle:"🏆 THE FORMAT",
+   projIntro:"<p>48 blockchains compete in the most corrupt tournament on the internet for the <span class='k'>Golden Rug</span>. The championship <span class='k'>runs on its own for 72 hours</span>, around the clock, until one chain rugs them all.</p>",
+   projHow:"<p><span class='k'>104 matches</span> across 72 hours. Results are <span class='k'>drawn at random the moment</span> each match is played — nobody knows who wins until it happens. The clock is driven by <span class='k'>time</span>, not by buys.</p><p><b>No draws:</b> no match ends in a tie; if it's level it's settled on <span class='k'>PENALTIES</span>.</p>",
+   projFormat:"<p>Group stage → Round of 32 → Round of 16 → Quarters → Semis → Final → Champion. The tournament kicks off and plays itself from start to finish.</p><p class='disc'>100% satire. Parody project, not affiliated with FIFA or the chains mentioned. <span class='k'>Token buys do NOT affect the tournament.</span> CA: paste-your-contract-address · X / Telegram.</p>",
    prizeTitle:"🏆 HOLDER PRIZE",
    prizeBody:"25% of the dev's first $RUGWC buy, raffled to holders when the tournament ends. Enter: follow @RUGWORLDCUP · repost the pinned post · hold ≥ [X] $RUGWC (≈$15). 1 entry per [X] held — hold more, win more. Random surprise snapshots; hold the minimum at every one. Dev does NOT sell — wallet public on <a class='prize-solscan' href='#' target='_blank' rel='noopener'>Solscan</a>. Winner proven on-chain. Satire · extreme risk · not financial advice.",
    satire:"100% SATIRE", buysState:"● live",
@@ -632,7 +645,11 @@ const TR={
    varReview:"⏸ REVISIÓN VAR", btnBuy:"● SIMULAR COMPRA", btnAuto:"▶ AUTO", btnStop:"■ STOP",
    finalTie:" (define la hinchada)",
    projTitle:"🪤 EL PROYECTO",
-   projBody:"<p>48 blockchains compiten en el torneo más corrupto de internet por el <span class='k'>Golden Rug</span>. El campeonato <span class='k'>corre solo durante 72 horas</span>, las 24hs, hasta que una cadena las ruguea a todas.</p><h4>¿CÓMO FUNCIONA?</h4><p><span class='k'>104 partidos</span> repartidos en 72hs. Los resultados se <span class='k'>sortean al azar en el momento</span> que se juega cada partido — nadie sabe quién gana hasta que pasa. El reloj lo maneja el <span class='k'>tiempo</span>, no las compras.</p><h4>SIN EMPATES</h4><p>Ningún partido termina empatado. Si hay empate, se define por <span class='k'>PENALES</span>.</p><h4>EL FORMATO</h4><p>Fase de grupos → 16avos → Octavos → Cuartos → Semis → Final → Campeón. El torneo arranca y se juega solo de principio a fin.</p><p class='disc'>100% sátira. Proyecto de parodia, no afiliado a FIFA ni a ninguna de las cadenas mencionadas. <span class='k'>Las compras del token NO afectan el torneo.</span> CA: paste-your-contract-address · X / Telegram. 48 chains enter. One chain rugs them all. 🪤</p>",
+   howTitle:"⚙ ¿CÓMO FUNCIONA?",
+   fmtTitle:"🏆 EL FORMATO",
+   projIntro:"<p>48 blockchains compiten en el torneo más corrupto de internet por el <span class='k'>Golden Rug</span>. El campeonato <span class='k'>corre solo durante 72 horas</span>, las 24hs, hasta que una cadena las ruguea a todas.</p>",
+   projHow:"<p><span class='k'>104 partidos</span> repartidos en 72hs. Los resultados se <span class='k'>sortean al azar en el momento</span> que se juega cada partido — nadie sabe quién gana hasta que pasa. El reloj lo maneja el <span class='k'>tiempo</span>, no las compras.</p><p><b>Sin empates:</b> ningún partido termina empatado; si hay igualdad se define por <span class='k'>PENALES</span>.</p>",
+   projFormat:"<p>Fase de grupos → 16avos → Octavos → Cuartos → Semis → Final → Campeón. El torneo arranca y se juega solo de principio a fin.</p><p class='disc'>100% sátira. Proyecto de parodia, no afiliado a FIFA ni a las cadenas mencionadas. <span class='k'>Las compras del token NO afectan el torneo.</span> CA: paste-your-contract-address · X / Telegram.</p>",
    prizeTitle:"🏆 PREMIO HOLDERS",
    prizeBody:"25% de la primera compra del dev en $RUGWC, sorteado entre holders al terminar el torneo. Entrás: seguí a @RUGWORLDCUP · reposteá el post fijado · holdeá ≥ [X] $RUGWC (≈USD 15). 1 entrada cada [X] — más holdeás, más chances. Snapshots sorpresa al azar; cumplí el mínimo en todos. El dev NO vende — wallet pública en <a class='prize-solscan' href='#' target='_blank' rel='noopener'>Solscan</a>. Ganador con prueba on-chain. Sátira · riesgo extremo · no es asesoramiento financiero.",
    satire:"100% SÁTIRA", buysState:"● en vivo",
@@ -1185,12 +1202,16 @@ var BACKEND_WS="wss://rug-world-cup-backend.onrender.com/ws";
 var srvWS=null, srvTries=0;
 var rwcPause=(function(){ try{ var d=document.createElement("div"); d.id="rwcPause"; d.className="rwcov"; d.style.display="none"; (document.getElementById("wrap")||document.body).appendChild(d); return d; }catch(e){ return null; } })();
 /* overlay central sobre el estadio: PRE-PARTIDO / PENALES / CAMPEÓN */
+function nameOf(sh){ var c=chainByShort(sh); return c?c.name:(sh||""); }
+function runnerUp(){ var b=S.srvBracket; if(!b||!b.rounds||!b.campeon) return null; for(var i=0;i<b.rounds.length;i++){ var rd=b.rounds[i]; if(rd && rd.size===2 && rd.matches){ for(var j=0;j<rd.matches.length;j++){ var mt=rd.matches[j]; if(mt.win) return (mt.a===mt.win)?mt.b:mt.a; } } } return null; }
 function setRwcOverlay(s){
  if(!rwcPause) return;
  var d=rwcPause;
- if(s.campeon){ var c=chainByShort(s.campeon);
+ if(s.campeon){ var c=chainByShort(s.campeon); var sub2=runnerUp();
    d.className="rwcov champ";
-   d.innerHTML='<div class="ov-t">🏆 '+(LANG==="es"?"CAMPEÓN":"CHAMPION")+'</div><div class="ov-c">'+esc(c?c.name:s.campeon)+'</div>'+(s.tercero?'<div class="ov-s">🥉 '+(LANG==="es"?"3er puesto: ":"3rd place: ")+esc(s.tercero)+'</div>':'');
+   d.innerHTML='<div class="ov-t">🏆 '+(LANG==="es"?"CAMPEÓN":"CHAMPION")+'</div><div class="ov-c">'+esc(c?c.name:s.campeon)+'</div>'
+     +(sub2?'<div class="ov-s">🥈 '+(LANG==="es"?"2º: ":"2nd: ")+esc(nameOf(sub2))+'</div>':'')
+     +(s.tercero?'<div class="ov-s">🥉 '+(LANG==="es"?"3º: ":"3rd: ")+esc(nameOf(s.tercero))+'</div>':'');
    d.style.display="block";
  } else if(s.started===false){
    d.className="rwcov pre";
@@ -1228,7 +1249,7 @@ function renderAbout(){
  var cards=document.querySelectorAll("#about .ab-card"); if(!cards.length) return;
  for(var i=0;i<cards.length;i++){ var on=(i===_aboutIdx%cards.length); cards[i].style.display=on?"":"none"; if(on){ cards[i].classList.remove("abshow"); void cards[i].offsetWidth; cards[i].classList.add("abshow"); } }
 }
-function startAbout(){ if(_aboutTimer) return; renderAbout(); _aboutTimer=setInterval(function(){ _aboutIdx++; renderAbout(); }, 9000); }
+function startAbout(){ if(_aboutTimer) return; renderAbout(); _aboutTimer=setInterval(function(){ _aboutIdx++; renderAbout(); }, 8000); }
 /* posesión decorativa: random-walk suave (no salta por snapshot) + refresco del HUD */
 var _possTimer=null;
 function startPoss(){ if(_possTimer) return; _possTimer=setInterval(function(){
