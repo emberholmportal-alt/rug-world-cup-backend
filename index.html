@@ -30,7 +30,7 @@ b{ font-weight:400; }
   background:radial-gradient(120% 120% at 50% 40%, transparent 50%, rgba(5,8,14,.55) 100%); }
 
 /* CRT overlay sobre TODO */
-#subboard{ position:fixed; top:140px; left:50%; transform:translateX(-50%); z-index:46; display:none; align-items:center; gap:20px; padding:16px 26px; background:linear-gradient(180deg,#0a0e16,#05080e); border:2px solid var(--amber); border-radius:8px; box-shadow:0 0 0 2px #000,0 6px 22px rgba(0,0,0,.6); }
+#subboard{ position:fixed; top:140px; left:50%; transform:translateX(-50%); z-index:70; display:none; align-items:center; gap:20px; padding:16px 26px; background:linear-gradient(180deg,#0a0e16,#05080e); border:2px solid var(--amber); border-radius:8px; box-shadow:0 0 0 2px #000,0 6px 22px rgba(0,0,0,.6); }
 #subboard.show{ display:flex; animation:subin .35s ease; }
 #subboard .sb-l{ font-family:'Press Start 2P'; font-size:15px; color:var(--amber); }
 #subboard .sb-out, #subboard .sb-in{ display:flex; flex-direction:column; align-items:center; gap:7px; font-family:'Press Start 2P'; font-size:13px; }
@@ -63,7 +63,7 @@ b{ font-weight:400; }
 #cinebar::before,#cinebar::after{ content:""; position:absolute; left:0; right:0; height:12vh; background:#000; box-shadow:0 0 22px rgba(0,0,0,.7); }
 #cinebar::before{ top:0; } #cinebar::after{ bottom:0; }
 #topbar,#shell,#about,#action,#ticker{ transition:opacity .5s ease; }
-body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.cine #ticker, body.cine #subboard, body.cine #varbox{ opacity:0 !important; pointer-events:none !important; }
+body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.cine #ticker, body.cine #varbox{ opacity:0 !important; pointer-events:none !important; }
 
 #flash{ position:fixed; inset:0; z-index:90; pointer-events:none; opacity:0; }
 #flash.f{ animation:flashfade .5s ease-out; }
@@ -291,6 +291,8 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
 .lh-mid .mn{ color:var(--cyan); font-size:18px; }
 .lh-hint{ color:var(--mut); font-size:14px; text-align:center; line-height:1.3; }
 .lh-watch{ text-align:center; font-family:'Press Start 2P'; font-size:9px; color:var(--green); animation:blink 1.4s steps(2) infinite; }
+.bar-explain{ font-size:12px; line-height:1.35; color:var(--mut); text-align:center; padding:1px 5px; }
+.bar-explain b{ color:var(--amber-l); }
 
 /* ===================== PANEL LATERAL (resumen + chat) */
 #about{ position:fixed; right:0; top:96px; bottom:30px; width:248px; z-index:31; display:none;
@@ -464,6 +466,7 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
   <div id="shell">
     <div class="leftcol">
       <div id="hudbar" class="hudbar"></div>
+      <div class="bar-explain" data-i18n-html="barExplain">Las barras muestran qué chain domina la <b>posesión</b> — cuanto más presiona, más cerca está el <b>GOL</b> ⚽.</div>
       <nav class="rotpanel" id="rotpanel"></nav>
     </div>
     <div class="screen"><div class="scr" id="screen"></div></div>
@@ -596,6 +599,7 @@ const TR={
  en:{ liveTag:"LIVE", complete:"🏆 COMPLETE", hype:"HYPE", waitingPlays:"waiting for plays…",
    liveHint:'buy <b style="color:var(--amber-l)">$RUGWC</b> to charge the ATTACK · at 100% the GOAL drops ⚽',
    liveWatch:"▼ THE MATCH IS PLAYED ON THE PITCH ▼",
+   barExplain:'The bars show which chain controls <b>possession</b> — the more it presses, the closer the <b>GOAL</b> ⚽.',
    progress:"PROGRESS", progressSub:"$RUGWC grows, the tournament advances",
    tableTitle:"TABLE · GOLDEN RUG", tableSub:"by points",
    aliveLine:"▣ GROUP STAGE · all 48 chains still alive — eliminations begin in the Round of 32",
@@ -628,6 +632,7 @@ const TR={
  es:{ liveTag:"EN VIVO", complete:"🏆 COMPLETO", hype:"HINCHADA", waitingPlays:"esperando jugadas…",
    liveHint:'comprá <b style="color:var(--amber-l)">$RUGWC</b> para cargar el ATAQUE · al 100% cae el GOL ⚽',
    liveWatch:"▼ EL PARTIDO SE JUEGA EN LA CANCHA ▼",
+   barExplain:'Las barras muestran qué chain domina la <b>posesión</b> — cuanto más presiona, más cerca está el <b>GOL</b> ⚽.',
    progress:"PROGRESO", progressSub:"crece $RUGWC, avanza el torneo",
    tableTitle:"TABLA · GOLDEN RUG", tableSub:"por puntos",
    aliveLine:"▣ FASE DE GRUPOS · las 48 chains siguen vivas — la eliminación arranca en Dieciseisavos (16vos)",
@@ -897,13 +902,7 @@ function renderHud(){
  el.innerHTML=h;
  updateLive._h=m.home.short; updateLive._a=m.away.short;
 }
-function renderLive(){
- let h='<div class="live-lite">';
- h+='<div class="lh-hint">'+i18n('liveHint')+'</div>';
- h+='<div class="lh-watch">'+i18n('liveWatch')+'</div>';
- h+='</div>';
- setScreen(h);
-}
+function renderLive(){ setScreen(""); }   /* centro limpio: el partido se ve en el estadio 3D */
 function updateLive(){
  const sc=$("#lvSc"); if(!sc) return; const m=S.match;
  var _ph=$("#lvPhase"); if(_ph) _ph.textContent=phaseLine();
@@ -1494,7 +1493,7 @@ function init3D(){
  function faceImgSrc(tok){ try{ const k=tok[0]==="@"?tok.slice(1):tok; if(tok[0]==="@" && typeof MEME_IMG!=="undefined" && MEME_IMG[k]) return MEME_IMG[k]; const tex=memeTex(tok); const im=tex&&tex.image; if(im){ if(im.toDataURL) return im.toDataURL(); if(im.src) return im.src; } }catch(e){} return ""; }
  function showSubBoard(outTok,inTok){ const b=document.getElementById("subboard"); if(!b) return; const oi=faceImgSrc(outTok),ii=faceImgSrc(inTok); b.innerHTML='<span class="sb-l">'+i18n('subSwap')+'</span><span class="sb-out"><img src="'+oi+'" alt=""><b>'+i18n('subOut')+'</b></span><span class="sb-in"><img src="'+ii+'" alt=""><b>'+i18n('subIn')+'</b></span>'; b.classList.add("show"); clearTimeout(showSubBoard._t); showSubBoard._t=setTimeout(()=>b.classList.remove("show"),3800); }
  const SUB_LINES={ es:{ gol:["entra sangre nueva 🔥","cambio para festejar el gol","piernas frescas tras el gol"], compra:["el DT mete un crack 💎","entra figura por la ballena","refuerzo de mercado 🚀"], rug:["🪤 lo ruggearon, sale del campo","cambio forzado, se fue rugueado","afuera el rugueado, entra otro"], ritmo:["cambio táctico del DT","rota el equipo","pierna cansada afuera"] }, en:{ gol:["fresh legs coming on 🔥","sub to celebrate the goal","new blood after the goal"], compra:["coach brings on a star 💎","signing in for the whale","market reinforcement 🚀"], rug:["🪤 he got rugged, off he goes","forced sub, walked off rugged","the rugged one is out"], ritmo:["tactical sub by the coach","rotating the squad","tired legs off"] } };
- function triggerSub(reason){ if(cine) return; const now=performance.now()/1000; if(now-lastSubT<28) return; const cand=players.filter(x=>!x.subPhase); if(!cand.length) return; const p=cand[rint(cand.length)]; lastSubT=now; p.subToken=nextFace(); try{ showSubBoard(p.faceToken, p.subToken); }catch(e){} p.subPhase=1; sfx("whistle"); const side=p.g.position.x>=0?1:-1; p.subTarget={x:side*7.0,z:1.6+Math.random()*1.0}; startCine({p:p,t:3.8,dur:3.8}); try{ const arr=(SUB_LINES[LANG]||SUB_LINES.en)[reason]||(SUB_LINES[LANG]||SUB_LINES.en).ritmo; pushChat(i18n('coach'),pick(arr),"#ffb02e"); }catch(e){} }
+ function triggerSub(reason){ if(cine) return; const now=performance.now()/1000; if(now-lastSubT<50) return; const cand=players.filter(x=>!x.subPhase); if(!cand.length) return; const p=cand[rint(cand.length)]; lastSubT=now; p.subToken=nextFace(); try{ showSubBoard(p.faceToken, p.subToken); }catch(e){} p.subPhase=1; sfx("whistle"); const side=p.g.position.x>=0?1:-1; p.subTarget={x:side*7.0,z:1.6+Math.random()*1.0}; startCine({p:p,t:3.8,dur:3.8}); try{ const arr=(SUB_LINES[LANG]||SUB_LINES.en)[reason]||(SUB_LINES[LANG]||SUB_LINES.en).ritmo; pushChat(i18n('coach'),pick(arr),"#ffb02e"); }catch(e){} }
  function subStep(p,dt){ const tx=p.subTarget.x,tz=p.subTarget.z; const dx=tx-p.g.position.x,dz=tz-p.g.position.z; const d=Math.hypot(dx,dz); if(d>0.14){ const sp=Math.min(d,2.8)*dt*1.35; p.g.position.x+=dx/d*sp; p.g.position.z+=dz/d*sp; p.g.rotation.y=Math.atan2(dx,dz); p.phase+=dt*13; const s=Math.sin(p.phase)*0.62; p.legL.rotation.x=s; p.legR.rotation.x=-s; p.armL.rotation.x=-s*0.7; p.armR.rotation.x=s*0.7; p.g.position.y=Math.abs(Math.sin(p.phase))*0.045; } else { if(p.subPhase===1){ p.faceToken=p.subToken; if(p.face){ p.face.material.map=memeTex(p.faceToken); p.face.material.needsUpdate=true; } p.subPhase=2; p.subTarget={x:Math.max(-6,Math.min(6,p.biasX)),z:(Math.random()*4-2)-1}; } else { p.subPhase=0; p.g.position.y=0; } } }
  // ===================== ARCOS / REDES
  function makeGoal(gx,faceDir){
