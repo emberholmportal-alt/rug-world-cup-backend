@@ -300,6 +300,9 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
 .ab-prize{ flex:none; }
 .ab-prize .ab-h{ color:var(--amber-l); }
 .ab-prize-p{ font-size:12.5px; line-height:1.42; color:var(--txt); margin:0; }
+.leftbuys{ flex:none; }
+.leftbuys .ab-h{ margin-bottom:6px; }
+.leftbuys .ab-buys{ max-height:168px; }
 .prize-solscan{ color:var(--cyan); text-decoration:underline; }
 .ab-h{ font-family:'Press Start 2P'; font-size:10px; color:var(--amber); margin-bottom:9px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 .ab-p{ font-size:16px; line-height:1.45; color:var(--txt); margin:0 0 9px; }
@@ -446,6 +449,10 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
     <div class="leftcol">
       <div id="hudbar" class="hudbar"></div>
       <nav class="rotpanel" id="rotpanel"></nav>
+      <div class="ab-card ab-buyswrap leftbuys">
+        <div class="ab-h">💸 <span data-i18n="buysLbl">COMPRAS</span> <span class="brug-lbl">$RUGWC</span> <span class="ab-state" id="feedState">● demo</span></div>
+        <div id="buys" class="ab-buys"></div>
+      </div>
     </div>
     <div class="screen"><div class="scr" id="screen"></div></div>
   </div>
@@ -460,11 +467,6 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
       <p class="ab-p" data-i18n-html="projP1"><b>RUG WORLD CUP 26</b>: 48 blockchains entran a un Mundial trucho y corrupto. Cada compra de <b>$RUGWC</b> carga el ATAQUE de una chain — cuando la barra llega a 100%, cae el <b>GOL</b> ⚽.</p>
       <p class="ab-p" data-i18n-html="projP2">El torneo avanza a medida que <b>crece $RUGWC</b>. Al final, una sola chain las <b>ruggea a todas</b> y se queda con el <b>Golden Rug</b> 🏆.</p>
       <div class="ab-tags"><span>48 CHAINS</span><span>$RUGWC</span><span>pump.fun</span><span>SOLANA</span><span data-i18n="satire">100% SÁTIRA</span></div>
-    </div>
-    <div class="ab-card ab-buyswrap">
-      <div class="ab-h">💸 <span data-i18n="buysLbl">COMPRAS</span> <span class="brug-lbl">$RUGWC</span> <span class="ab-state" id="feedState">● demo</span></div>
-      <div class="ab-sub" data-i18n="buysSub">cada compra de $RUGWC pumpea ⚡ a 1 de las 2 chains en cancha</div>
-      <div id="buys" class="ab-buys"></div>
     </div>
     <div class="ab-card ab-prize">
       <div class="ab-h" data-i18n="prizeTitle">🏆 PREMIO HOLDERS</div>
