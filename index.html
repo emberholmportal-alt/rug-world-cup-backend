@@ -320,6 +320,8 @@ body.cine #topbar, body.cine #shell, body.cine #about, body.cine #action, body.c
 #rwcPause.pen{ border-color:#ff4d4d; }
 #rwcPause.pen .ov-t{ color:#ff4d4d; text-shadow:0 0 14px rgba(255,77,77,.65); animation:blink .8s steps(2) infinite; }
 #rwcPause.champ{ border-color:#ffd24a; box-shadow:0 0 30px rgba(255,210,74,.4); }
+#about .ab-card.abshow{ animation:abfade .45s ease; }
+@keyframes abfade{ from{ opacity:0; transform:translateY(8px); } }
 .ab-tags{ display:flex; flex-wrap:wrap; gap:5px; margin-top:4px; }
 .ab-tags span{ font-family:'Press Start 2P'; font-size:7px; color:var(--cyan); border:2px solid var(--line); padding:4px 6px; }
 .ab-chatwrap{ flex:1; min-height:0; display:flex; flex-direction:column; }
@@ -887,7 +889,6 @@ function renderLive(){
 }
 function updateLive(){
  const sc=$("#lvSc"); if(!sc) return; const m=S.match;
- S.poss=Math.max(33,Math.min(67,(S.poss==null?50:S.poss)+(Math.random()*2-1)*5));
  var _ph=$("#lvPhase"); if(_ph) _ph.textContent=phaseLine();
  if(updateLive._h!==m.home.short){ $("#lvHome").innerHTML=flagHTML(m.home,28)+'<span class="nm">'+m.home.name.toUpperCase()+'</span>'; updateLive._h=m.home.short; }
  if(updateLive._a!==m.away.short){ $("#lvAway").innerHTML=flagHTML(m.away,28)+'<span class="nm">'+m.away.name.toUpperCase()+'</span>'; updateLive._a=m.away.short; }
@@ -1197,11 +1198,44 @@ function setRwcOverlay(s){
    d.style.display="block";
  } else if(s.penales){
    var hh=(S.match&&S.match.home)?S.match.home.short:s.local.short, aa=(S.match&&S.match.away)?S.match.away.short:s.visita.short;
+   var ps=S.penScore, psc=ps?(esc(hh)+' ('+ps.home+') - ('+ps.away+') '+esc(aa)):(esc(hh)+' '+s.local.goles+' - '+s.visita.goles+' '+esc(aa));
    d.className="rwcov pen";
-   d.innerHTML='<div class="ov-t">⚽ '+(LANG==="es"?"PENALES":"PENALTY SHOOTOUT")+'</div><div class="ov-s">'+esc(hh)+' '+s.local.goles+' - '+s.visita.goles+' '+esc(aa)+'</div>';
+   d.innerHTML='<div class="ov-t">⚽ '+(LANG==="es"?"PENALES":"PENALTY SHOOTOUT")+'</div><div class="ov-s">'+psc+'</div>';
    d.style.display="block";
  } else { d.style.display="none"; }
 }
+/* ===== drivers de ambiente del cliente (todo decorativo, NO toca resultados) ===== */
+function ambienteActivo(){ var s=S.srv; return !!(S.started && s && s.started && !s.penales && !s.campeon); }
+var _ambTimer=null;
+function startAmbiente(){
+ if(_ambTimer) return;
+ _ambTimer=setInterval(function(){
+  if(!ambienteActivo()) return;
+  var r=Math.random();
+  if(r<0.55){
+   var tipo=pick(["VAR","AMARILLA","AMARILLA","ROJA","CORRUPCION","SPONSOR","LESION","RUG"]);
+   if(tipo==="VAR"){ try{ varOverlay(); }catch(e){} }
+   else { var team=(Math.random()<0.5)?(S.match&&S.match.home):(S.match&&S.match.away);
+     try{ fxFor(tipo,team); }catch(e){}                 // presentación pura (cartelón + flash/shake)
+     try{ if(window.SC) SC.onEvent(tipo); }catch(e){} }  // memes 3D temáticos
+  } else if(r<0.75){ try{ if(window.SC&&SC.sub) SC.sub(pick(["ritmo","ritmo","gol"])); }catch(e){} }
+  try{ if(window.SC&&SC.bump) SC.bump(); }catch(e){}      // bump de energía para que el ritmo "ondee"
+ }, 3500);
+}
+/* rotador del panel derecho: muestra una .ab-card a la vez, completa (no se corta) */
+var _aboutIdx=0, _aboutTimer=null;
+function renderAbout(){
+ var cards=document.querySelectorAll("#about .ab-card"); if(!cards.length) return;
+ for(var i=0;i<cards.length;i++){ var on=(i===_aboutIdx%cards.length); cards[i].style.display=on?"":"none"; if(on){ cards[i].classList.remove("abshow"); void cards[i].offsetWidth; cards[i].classList.add("abshow"); } }
+}
+function startAbout(){ if(_aboutTimer) return; renderAbout(); _aboutTimer=setInterval(function(){ _aboutIdx++; renderAbout(); }, 9000); }
+/* posesión decorativa: random-walk suave (no salta por snapshot) + refresco del HUD */
+var _possTimer=null;
+function startPoss(){ if(_possTimer) return; _possTimer=setInterval(function(){
+  if(S.poss==null) S.poss=50;
+  S.poss+=(Math.random()-0.5)*0.6+(50-S.poss)*0.01; S.poss=Math.max(38,Math.min(62,S.poss));
+  if(S.started){ var el=$("#lvMeters"); if(el && S.match && S.match.home){ try{ el.innerHTML=meterRowHTML(S.match); }catch(e){} } }
+ }, 140); }
 function applyState(s){
  var ai=SHORT2I[s.local.short], bi=SHORT2I[s.visita.short];
  if(ai==null||bi==null) return;
@@ -1216,8 +1250,8 @@ function applyState(s){
  if(S._lastRonda && S._lastRonda!==s.ronda && !s.campeon){ try{ pushChat(i18n('tournament'),"🔓 "+(s.ronda||"").toUpperCase(), "#ffb02e"); }catch(e){} }
  S._lastRonda=s.ronda;
  window.RWC_VE=(s.energia||0)/100; window.RWC_VA=true;
- if(newKey!==prevKey) S.poss=45+Math.random()*10;   // posesión decorativa, nueva por partido
- if(s.penales && !S._lastPenales){ try{ sfx("whistle"); }catch(e){} if(!REDUCE){ try{ flashScreen("rgba(255,77,77,.28)"); shake("s"); }catch(e){} } }
+ if(s.penales && !S._lastPenales){ try{ sfx("whistle"); }catch(e){} if(!REDUCE){ try{ flashScreen("rgba(255,77,77,.28)"); shake("s"); }catch(e){} } try{ if(window.SC&&SC.penalties) SC.penalties(s.local.short,s.visita.short); }catch(e){} }
+ if(!s.penales && S._lastPenales){ S.penScore=null; }
  S._lastPenales=!!s.penales;
  if(s.campeon){ if(S._lastChamp!==s.campeon){ S._lastChamp=s.campeon; var ci=SHORT2I[s.campeon]; if(ci!=null){ try{ championFX(chain(ci)); }catch(e){} } } } else { S._lastChamp=null; }
  try{ setRwcOverlay(s); }catch(e){}
@@ -1269,7 +1303,7 @@ function sfx(name){
 function startGame(){
  if(S.started) return; S.started=true; ensureAudio();
  $("#title").style.display="none"; $("#shell").classList.add("on"); $("#action").classList.add("on"); $("#about").classList.add("on"); $("#ticker").classList.add("on");
- renderHud(); renderRotPanel(); renderScreen(); renderTopbar(); startTicker(); startRot();
+ renderHud(); renderRotPanel(); renderScreen(); renderTopbar(); startTicker(); startRot(); startAmbiente(); startAbout(); startPoss();
  var rp=$("#rotpanel"); if(rp) rp.onclick=function(){ rotAdvance(); if(rotTimer){ clearInterval(rotTimer); rotTimer=null; startRot(); } };
  blip("confirm");
 }
@@ -1535,7 +1569,7 @@ function init3D(){
  // ===================== luces / cámara / glitch
  let p1b=0,p2b=0,celebFlash=0,glitch3D=0; function pulseLight(l){ if(l===p1)p1b=1; else p2b=1; }
  // ===== ENERGÍA GLOBAL: late con cada compra, decae sola (vida media ~7.5s), con piso para que la escena nunca se vea congelada
- let energy=0, E=0.18; const E_FLOOR=0.18, E_HALF=7.5, E_CAP=1.8;
+ let energy=0, E=0.18; const E_FLOOR=0.55, E_HALF=7.5, E_CAP=1.8;
  function addEnergy(sol){ energy=Math.min(E_CAP, energy + 0.22 + Math.min(sol,4)*0.18); }
  const cam={t:0,dur:2.6,gx:0}; function celebrate(gx){ cam.t=cam.dur; cam.gx=gx; }
  const lookCur=new THREE.Vector3(0,1,-1.5);
@@ -1544,7 +1578,28 @@ function init3D(){
   special(tok){ energy=Math.min(E_CAP,energy+0.7); spawnFireworks(0,3.2,-1,0xff3d7f); spawnFireworks(-2.6,3.6,-1,0xffd24a); spawnFireworks(2.6,3.6,-1,0x36e0d0); spawnMeme(tok,0,3.0,-1,0,0.25,0,3.4,2.8); for(let i=0;i<4;i++) spawnMeme(tok,Math.random()*8-4,5+Math.random()*2,Math.random()*5-3,(Math.random()-0.5),-1.2,0,1.1+Math.random()*0.6,2.4); celebFlash=1.2; },
   onBuy(side,sol){ addEnergy(sol); const gx=side==="home"?7.3:-7.3; const pw=3.0+Math.min(sol,4)*0.9; if(goalBallT<=0){ const tx=(side==="home"?1:-1)*(1.5+Math.random()*4), tz=Math.random()*5-2.5; kickBall(tx,tz,pw,1.0+Math.min(sol,3)*0.3); } pulseLight(side==="home"?p2:p1); spawnMeme(pick(["🚀","@pepe","@doge","@shib","@bonk","@wif","@brett","@gigachad","@megusta","💎","@floki","@stonks"]),ball.mesh.position.x,0.8,ball.mesh.position.z,(Math.random()-0.5),2.3,(Math.random()-0.5),1.2,1.7); if(sol>=2){ spawnMeme(pick(["@cz","@saylor","@notbad","@motherofgod","@elon","🐋"]),ball.mesh.position.x+0.4,1.3,ball.mesh.position.z,(Math.random()-0.5)*1.6,2.0,0,1.7,2.1); spawnMeme("WHALE",ball.mesh.position.x,2.1,ball.mesh.position.z,0,1.4,0,1.2,2.1); spawnFireworks(ball.mesh.position.x,2.3,ball.mesh.position.z,0x36e0d0); sfx("coin"); } },
   onGoal(side){ energy=Math.min(E_CAP,energy+0.9); sfx("goal"); const gx=side==="home"?7.3:-7.3; goalBallT=2.0; kickBall(gx,-1+(Math.random()*0.6-0.3),9.2,1.8); (side==="home"?goals.right:goals.left).rip=1; startCine({gx:gx,t:3.2,dur:3.2}); celebFlash=1.5; spawnFireworks(gx,2.5,-1,0xffd24a); spawnFireworks(gx-Math.sign(gx)*1.6,3.2,-1,0xff3d7f); spawnFireworks(0,4,-3,0x3ddc84); const set=["@pepe","@doge","@shib","@bonk","@wif","@brett","@mog","@popcat","@megusta","@gigachad","@floki","@turbo","@mew","@andy","🚀","💎","🔥"]; for(let i=0;i<7;i++) spawnMeme(pick(set),Math.random()*10-5,5+Math.random()*2.5,Math.random()*6-4,(Math.random()-0.5)*1.5,-1.4-Math.random(),(Math.random()-0.5),1.2+Math.random()*0.9,2.6); spawnMeme(pick(["GOOOL","WAGMI","LFG","TO THE MOON","1000x"]),0,3.6,-1,0,0.5,0,2.0,2.8); spawnMeme(pick(["@megusta","@troll","@gigachad","@awyeah"]),0,2.0,0.5,0,0.4,0,2.4,2.8); },
-  onEvent(type){ if(type==="RUG"){ glitch3D=1; tumbleRandom(); sfx("rug"); for(let i=0;i<4;i++) spawnMeme(pick(["@rage","@foreveralone","@trolldad","@sbf","@dokwon","🧻","🐻","💀"]),Math.random()*8-4,1+Math.random()*2,Math.random()*5-3,(Math.random()-0.5),1.7,0,1.2,2.1); spawnMeme(pick(["@sbf","@dokwon"]),0,2.7,-1,0,0.7,0,1.9,2.4); spawnMeme("RUGGED",0,3.4,-1,0,0.8,0,1.7,2.3); } else if(type==="CORRUPCION"){ for(let i=0;i<3;i++) spawnMeme("💸",Math.random()*8-4,3+Math.random()*2,Math.random()*5-3,(Math.random()-0.5),-1.2,0,1.0,2.0); spawnMeme(pick(["@sbf","@trump","@pokerface","@likeasir"]),0,2.2,-1,0,0.9,0,1.8,2.3); spawnMeme("BRIBED",0,3.0,-1,0,1,0,1.5,2.3); } else if(type==="ROJA"||type==="AMARILLA"){ tumbleRandom(); spawnMeme(pick(["@trolldad","@rage","@okayguy","🤡"]),ball.mesh.position.x,1.5,ball.mesh.position.z,(Math.random()-0.5),1.6,0,1.4,1.9); } else if(type==="LESION"){ tumbleRandom(); spawnMeme(pick(["@okayguy","@foreveralone","@soyjak","🩹"]),ball.mesh.position.x,1.3,ball.mesh.position.z,0,1.4,0,1.2,1.8); } else if(type==="SPONSOR"){ spawnMeme(pick(["@likeasir","@notbad","@saylor","GM","DYOR"]),Math.random()*6-3,2+Math.random(),-1,0,1,0,1.4,2.0); } else if(Math.random()<0.55){ spawnMeme(pick(["@troll","@megusta","@pokerface","@gigachad","@cerealguy","👀","🔥"]),Math.random()*8-4,1.6,Math.random()*5-3,(Math.random()-0.5),1.4,0,1.1,1.8); } }
+  onEvent(type){ if(type==="RUG"){ glitch3D=1; tumbleRandom(); sfx("rug"); for(let i=0;i<4;i++) spawnMeme(pick(["@rage","@foreveralone","@trolldad","@sbf","@dokwon","🧻","🐻","💀"]),Math.random()*8-4,1+Math.random()*2,Math.random()*5-3,(Math.random()-0.5),1.7,0,1.2,2.1); spawnMeme(pick(["@sbf","@dokwon"]),0,2.7,-1,0,0.7,0,1.9,2.4); spawnMeme("RUGGED",0,3.4,-1,0,0.8,0,1.7,2.3); } else if(type==="CORRUPCION"){ for(let i=0;i<3;i++) spawnMeme("💸",Math.random()*8-4,3+Math.random()*2,Math.random()*5-3,(Math.random()-0.5),-1.2,0,1.0,2.0); spawnMeme(pick(["@sbf","@trump","@pokerface","@likeasir"]),0,2.2,-1,0,0.9,0,1.8,2.3); spawnMeme("BRIBED",0,3.0,-1,0,1,0,1.5,2.3); } else if(type==="ROJA"||type==="AMARILLA"){ tumbleRandom(); spawnMeme(pick(["@trolldad","@rage","@okayguy","🤡"]),ball.mesh.position.x,1.5,ball.mesh.position.z,(Math.random()-0.5),1.6,0,1.4,1.9); } else if(type==="LESION"){ tumbleRandom(); spawnMeme(pick(["@okayguy","@foreveralone","@soyjak","🩹"]),ball.mesh.position.x,1.3,ball.mesh.position.z,0,1.4,0,1.2,1.8); } else if(type==="SPONSOR"){ spawnMeme(pick(["@likeasir","@notbad","@saylor","GM","DYOR"]),Math.random()*6-3,2+Math.random(),-1,0,1,0,1.4,2.0); } else if(Math.random()<0.55){ spawnMeme(pick(["@troll","@megusta","@pokerface","@gigachad","@cerealguy","👀","🔥"]),Math.random()*8-4,1.6,Math.random()*5-3,(Math.random()-0.5),1.4,0,1.1,1.8); } },
+  bump(){ energy=Math.min(E_CAP,energy+0.12); },
+  sub(reason){ try{ triggerSub(reason); }catch(e){} },
+  penalties(homeShort,awayShort){
+   if(SC._penRunning) return; SC._penRunning=true; S.penScore={home:0,away:0};
+   var pen=S.penScore, side="home", arcoX=7.3, shot=0;
+   function step(){
+    if(!S.srv||!S.srv.penales){ SC._penRunning=false; return; }
+    ball.mesh.position.set(arcoX-2.4,0.18,(side==="home"?0.4:-0.4)); ball.vx=ball.vz=ball.vy=0;
+    try{ startCine({gx:arcoX,t:1.7,dur:1.7}); }catch(e){}
+    var gol=Math.random()<0.7, sd=side;
+    setTimeout(function(){
+     if(!S.srv||!S.srv.penales){ SC._penRunning=false; return; }
+     if(gol){ kickBall(arcoX,(Math.random()*1.2-0.6),9.0,1.2); goals.right.rip=1; celebFlash=1.2; try{ sfx("goal"); }catch(e){} spawnFireworks(arcoX,2.4,-1,0xffd24a); spawnMeme(pick(["GOL","✅","🔥","@gigachad"]),arcoX,3.0,-1,0,0.5,0,1.8,1.6); if(sd==="home") pen.home++; else pen.away++; }
+     else { kickBall(arcoX+0.5,(Math.random()<0.5?2.6:-2.6),8.0,1.6); try{ sfx("whistle"); }catch(e){} spawnMeme(pick(["❌","@foreveralone","@okayguy","🧱"]),arcoX,2.6,-1,0,0.6,0,1.6,1.6); }
+     try{ setRwcOverlay(S.srv); }catch(e){}
+     shot++; side=(sd==="home")?"away":"home";
+     if(S.srv&&S.srv.penales&&shot<10){ setTimeout(step,1700); } else { SC._penRunning=false; }
+    },700);
+   }
+   try{ setRwcOverlay(S.srv); }catch(e){} step();
+  }
  };
  let t0=performance.now();
  let last=t0;
@@ -1582,7 +1637,7 @@ function init3D(){
   // FUEGOS
   for(let i=fwActive.length-1;i>=0;i--){ const f=fwActive[i]; f.life-=dt; if(f.life<=0){ scene.remove(f.pts); f.pts.geometry.dispose(); f.pts.material.dispose(); fwActive.splice(i,1); continue; } const pa=f.pts.geometry.attributes.position.array; for(let j=0;j<f.vel.length;j++){ f.vel[j][1]-=4.5*dt; pa[j*3]+=f.vel[j][0]*dt; pa[j*3+1]+=f.vel[j][1]*dt; pa[j*3+2]+=f.vel[j][2]*dt; } f.pts.geometry.attributes.position.needsUpdate=true; f.pts.material.opacity=f.life/f.max; }
   // memes ambientales ocasionales (mascotas memecoin + caras retro)
-  if(Math.random()<dt*(0.06+E*0.5)) spawnMeme(pick(ALL_MASCOTS.concat(["@troll","@megusta","@pokerface","@gigachad","🚀","💎","🐸","🐕","🤑","🐶"])),Math.random()*12-6,0.7+Math.random(),Math.random()*7-4,(Math.random()-0.5)*0.6,1.0+Math.random()*0.6,(Math.random()-0.5)*0.4,0.95+Math.random()*0.55,2.3);
+  if(Math.random()<dt*(0.10+E*0.5)) spawnMeme(pick(ALL_MASCOTS.concat(["@troll","@megusta","@pokerface","@gigachad","🚀","💎","🐸","🐕","🤑","🐶"])),Math.random()*12-6,0.7+Math.random(),Math.random()*7-4,(Math.random()-0.5)*0.6,1.0+Math.random()*0.6,(Math.random()-0.5)*0.4,0.95+Math.random()*0.55,2.3);
   /* cambios desactivados: los modelos 3D solo hacen goles visuales reales */
   // LUCES
   ambient.intensity=0.42+E*0.5;
