@@ -58,6 +58,7 @@ ROUND_NAMES = {32: "16avos de final", 16: "Octavos de final", 8: "Cuartos de fin
 GROUP_LETTERS = "ABCDEFGHIJKL"   # 12 grupos
 
 MATCH_LEN = 90   # minutos de juego (ficticios) por partido
+GROUP_PEN_PROB = 0.12  # en grupos casi todos los empates quedan empate; raramente se van a penales
 
 # calendario round-robin de 4 equipos (indices locales 0-3), 3 fechas
 RR_ROUNDS = [[(0, 3), (1, 2)], [(0, 2), (3, 1)], [(0, 1), (2, 3)]]
@@ -122,7 +123,8 @@ class Match:
         self.final_b = 0
         # timeline de goles: lista de (minuto, "a"/"b") ordenada
         self.goals = []
-        self.pen_winner = None     # "a"/"b" si el marcador final es empate (penales)
+        self.pen_winner = None     # "a"/"b" si se define por penales
+        self.pen = False           # True si este partido se resuelve por penales
         # estado revelado en vivo
         self.ga = 0
         self.gb = 0
@@ -186,7 +188,13 @@ class Tournament:
         goals += [(random.randint(1, 89), "b") for _ in range(gb)]
         goals.sort(key=lambda x: x[0])
         m.goals = goals
-        m.pen_winner = ("a" if random.random() < 0.5 else "b") if ga == gb else None
+        m.pen_winner = None
+        m.pen = False
+        if ga == gb:
+            # en KO siempre se define por penales; en grupos casi siempre queda empate
+            m.pen = True if m.stage != "grupos" else (random.random() < GROUP_PEN_PROB)
+            if m.pen:
+                m.pen_winner = "a" if random.random() < 0.5 else "b"
         m.ga = 0
         m.gb = 0
         m.minuto = 0
@@ -266,14 +274,11 @@ class Tournament:
 
     # ---------- standings ----------
     def _record_group(self, m):
-        a, b, sa, sb = m.a, m.b, m.final_a, m.final_b
+        a, b = m.a, m.b
+        sa, sb = m.final_a, m.final_b
         A, B = self.stats[a], self.stats[b]
         A["pj"] += 1
         B["pj"] += 1
-        A["gf"] += sa
-        A["gc"] += sb
-        B["gf"] += sb
-        B["gc"] += sa
         if sa > sb:
             A["g"] += 1
             B["p"] += 1
@@ -282,18 +287,28 @@ class Tournament:
             B["g"] += 1
             A["p"] += 1
             B["pts"] += 3
-        else:
-            # empate -> penales -> sin empates en la tabla (ganador 2 / perdedor 1)
+        elif m.pen:
+            # empate definido por penales (raro en grupos): el ganador mete el gol decisivo
             if m.pen_winner == "a":
+                sa += 1
                 A["g"] += 1
                 B["p"] += 1
-                A["pts"] += 2
-                B["pts"] += 1
+                A["pts"] += 3
             else:
+                sb += 1
                 B["g"] += 1
                 A["p"] += 1
-                B["pts"] += 2
-                A["pts"] += 1
+                B["pts"] += 3
+        else:
+            # empate real: 1 punto para cada uno
+            A["e"] += 1
+            B["e"] += 1
+            A["pts"] += 1
+            B["pts"] += 1
+        A["gf"] += sa
+        A["gc"] += sb
+        B["gf"] += sb
+        B["gc"] += sa
 
     def _rank_key(self, t):
         s = self.stats[t]
@@ -334,7 +349,7 @@ class Tournament:
         m.shown = len(m.goals)
         self.version += 1
         self.cur_slot += 1
-        pen = (m.final_a == m.final_b)
+        pen = m.pen
 
         if self.phase == "grupos":
             self._record_group(m)
@@ -439,7 +454,7 @@ class Tournament:
             total = self.matches_in_round()
 
         penales = bool(self.started and self.champion is None
-                       and m.final_a == m.final_b and m.minuto >= 86)
+                       and m.pen and m.minuto >= 86)
 
         return {
             "type": "state", "fase": fase, "ronda": ronda, "fecha": fecha,
